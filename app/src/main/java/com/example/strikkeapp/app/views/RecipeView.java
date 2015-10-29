@@ -37,7 +37,6 @@ public class RecipeView extends State {
     // Draw the squares on the canvas
     public void draw (Canvas canvas){
         calculateSquareSize();
-        recipe.resizePattern(); // FUNKER IKKE!
         int numPatterns = recipe.getNumMultiplePatterns();
         Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
         ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();

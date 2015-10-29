@@ -42,6 +42,7 @@ public class RecipeActivity extends Activity {
         rows = Integer.parseInt(intent.getExtras().getString("rows"));
 
         RecipeModel recipe = new RecipeModel(bModel.getPattern(), circumference, stitches, rows, width);
+        recipe.generatePattern();
         RecipeView view = new RecipeView(recipe, this, display);
         game.pushState(view);
 

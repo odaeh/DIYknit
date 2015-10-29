@@ -69,7 +69,16 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         }
     }
 
-    public void resizePattern() {
+    public void generatePattern(){
+        ArrayList<ArrayList<SquareModel>> pattern =extractPattern();
+        int num = getNumMultiplePatterns();
+        for (int col = 0; col < num ; col ++){
+            printArray();
+            insertPattern(0, col* pattern.size(), pattern);
+        }
+    }
+
+    public ArrayList<ArrayList<SquareModel>> extractPattern() {
         ArrayList<ArrayList<SquareModel>> newSquares = new ArrayList<ArrayList<SquareModel>>();
 
         for (int i = 0; i < squares.size(); i++) {
@@ -81,17 +90,20 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
                 }
             }
             newSquares.add(newSquareRow);
-           // System.out.println("antall mønster pr rad: " + numMultiplePatterns);
+            System.out.println("antall mønster i bord: " + getNumMultiplePatterns());
            // System.out.println("størrelse på rad: " + newSquareRow.size());
         }
-
-        this.squares = newSquares;
+        return newSquares;
     }
 
     public void insertPattern(int i, int j, ArrayList<ArrayList<SquareModel>> pattern){
-        //for (int k = 0; k < numMultiplePatterns; k++) {
-        //newSquares.add(newSquareRow);
-        //}
+        for (int row = 0; row < pattern.size(); row++){
+            for (int col = 0; col < pattern.get(row).size(); col++){
+                int squareRow = i + row;
+                int squareCol = j + col;
+                squares.get(squareRow).get(squareCol).setSquareState(pattern.get(row).get(col).getSquareState());
+            }
+        }
     }
 
     public float getXpos(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
