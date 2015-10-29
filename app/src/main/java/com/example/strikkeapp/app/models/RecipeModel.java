@@ -9,7 +9,7 @@ import java.util.Collections;
 public class RecipeModel extends SimpleObservable <RecipeModel> {
 
     int patternId;
-    public ArrayList<ArrayList<SquareModel>> pattern;
+    public ArrayList<ArrayList<SquareModel>> squares;
     int width;
     int height;
     int screenWidth;
@@ -19,15 +19,15 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int rows;
     int numCasts;
     int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
-    int numMultiplePatterns;
 
     // CONSTRUCTOR
-    public RecipeModel(ArrayList<ArrayList<SquareModel>> pattern, int circumference, int stitches, int rows, int screenWidth) {
-        this.pattern = pattern;
+    public RecipeModel(ArrayList<ArrayList<SquareModel>> squares, int circumference, int stitches, int rows, int screenWidth) {
+        this.squares = squares;
         this.circumference = circumference;
         this.rows = rows;
         this.stitches = stitches;
         this.screenWidth = screenWidth;
+        printArray();
         getSizeOfPattern();
         //resizePattern();
         calculateCasts();
@@ -37,14 +37,14 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         ArrayList<Integer> horizontal = new ArrayList<Integer>();
         ArrayList<Integer> vertical = new ArrayList<Integer>();
 
-        for (int i = 0; i < pattern.size(); i++) {
-            for (int j = 0; j < pattern.size(); j++) {
-                SquareState state = pattern.get(i).get(j).getSquareState();
-                squareSize = pattern.get(i).get(j).getSquareSize();
+        for (int i = 0; i < squares.size(); i++) {
+            for (int j = 0; j < squares.size(); j++) {
+                SquareState state = squares.get(i).get(j).getSquareState();
+                squareSize = squares.get(i).get(j).getSquareSize();
 
                 if (state == SquareState.FULL) {
-                    horizontal.add((int) pattern.get(i).get(j).getPosition().getX());
-                    vertical.add((int) pattern.get(i).get(j).getPosition().getY());
+                    horizontal.add((int) squares.get(i).get(j).getPosition().getX());
+                    vertical.add((int) squares.get(i).get(j).getPosition().getY());
                 }
             }
         }
@@ -59,30 +59,40 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         height = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
     }
 
+    public void printArray(){
+        for (int i = 0; i < squares.size(); i++) {
+            for (int j = 0; j < squares.size(); j++) {
+                char state = squares.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
+                System.out.print(state);
+            }
+            System.out.println(" ");
+        }
+    }
+
     public void resizePattern() {
         ArrayList<ArrayList<SquareModel>> newSquares = new ArrayList<ArrayList<SquareModel>>();
 
-        //numMultiplePatterns = (screenWidth / squareSize) / width; // er plass til 30 ruter bortover da de tegnes i halv størrelse
-
-        for (int i = 0; i < pattern.size(); i++) {
+        for (int i = 0; i < squares.size(); i++) {
             ArrayList<SquareModel> newSquareRow = new ArrayList<SquareModel>();
-            System.out.println(pattern.size()+ " " + pattern.get(i).size());
-            for (int j = 0; j < pattern.get(i).size(); j++) {
-                if (getXpos(pattern, i, j) >= actualPatternDim[0] && pattern.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && pattern.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && pattern.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
-                    newSquareRow.add(pattern.get(i).get(j));
+            System.out.println(squares.size()+ " " + squares.get(i).size());
+            for (int j = 0; j < squares.get(i).size(); j++) {
+                if (getXpos(squares, i, j) >= actualPatternDim[0] && squares.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && squares.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && squares.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
+                    newSquareRow.add(squares.get(i).get(j));
                 }
             }
-            //for (int k = 0; k < numMultiplePatterns; k++) {
-                newSquares.add(newSquareRow);
-            //}
-            System.out.println("antall mønster pr rad: " + numMultiplePatterns);
-            System.out.println("størrelse på rad: " + newSquareRow.size());
+            newSquares.add(newSquareRow);
+           // System.out.println("antall mønster pr rad: " + numMultiplePatterns);
+           // System.out.println("størrelse på rad: " + newSquareRow.size());
         }
 
-        this.pattern = newSquares;
+        this.squares = newSquares;
     }
 
-
+    public void insertPattern(int i, int j, ArrayList<ArrayList<SquareModel>> pattern){
+        //for (int k = 0; k < numMultiplePatterns; k++) {
+        //newSquares.add(newSquareRow);
+        //}
+    }
 
     public float getXpos(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
         return pattern.get(i).get(j).getPosition().getX();
@@ -95,6 +105,6 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     }
 
     public int getNumMultiplePatterns(){
-        return numMultiplePatterns;
+        return (screenWidth / squareSize) / width; // er plass til 30 ruter bortover da de tegnes i halv størrelse
     }
 }
