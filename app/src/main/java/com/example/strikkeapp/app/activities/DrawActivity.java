@@ -63,7 +63,7 @@ public class DrawActivity extends Activity {
        // when the button is pushed the pattern is saved and a recipe is generated
             public void onClick(View v) {
                 Intent intent = new Intent (DrawActivity.this, RecipeActivity.class);
-                intent.putExtra("squares", board);
+                intent.putExtra("boardmodel", board);
                 intent.putExtra("circumference", circumference);
                 intent.putExtra("stitches", stitches);
                 intent.putExtra("rows", rows);

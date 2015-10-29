@@ -2,12 +2,10 @@ package com.example.strikkeapp.app.views;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.Display;
 import com.example.strikkeapp.app.activities.RecipeActivity;
 import com.example.strikkeapp.app.models.RecipeModel;
 import com.example.strikkeapp.app.models.SquareModel;
-import com.example.strikkeapp.app.models.SquareState;
 
 import java.util.ArrayList;
 import sheep.game.State;
@@ -32,7 +30,7 @@ public class RecipeView extends State {
 
     // the size of the squares depends on the number of squares in a row and the width of the actual screen
     public void calculateSquareSize(){
-        int rows = recipe.squares.size();
+        int rows = recipe.pattern.size();
         squareSize = (int) (width / rows); // width of a square
     }
 
@@ -44,9 +42,9 @@ public class RecipeView extends State {
         Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
         ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();
 
-        for (int i = 0; i < recipe.squares.size(); i++) {
+        for (int i = 0; i < recipe.pattern.size(); i++) {
             ArrayList<SquareModel> squareRow = new ArrayList<SquareModel>();
-            for (int j = 0; j < recipe.squares.get(i).size(); j++) {
+            for (int j = 0; j < recipe.pattern.get(i).size(); j++) {
                 Vector2 pos = new Vector2(squareSize * j, squareSize * i);
                 SquareModel square = new SquareModel(pos, sizeVec);
                 square.setSize(squareSize);
@@ -64,9 +62,9 @@ public class RecipeView extends State {
 
     // Draw the square states that is received from the pattern
    private void drawSquares(Canvas canvas) {
-       for (int i = 0; i < recipe.squares.size(); i++) {
-           for (int j = 0; j < recipe.squares.get(i).size(); j++) {
-               recipe.squares.get(i).get(j).draw(canvas);
+       for (int i = 0; i < recipe.pattern.size(); i++) {
+           for (int j = 0; j < recipe.pattern.get(i).size(); j++) {
+               recipe.pattern.get(i).get(j).draw(canvas);
                }
            }
    }
@@ -78,9 +76,9 @@ public class RecipeView extends State {
 
     // all the SquareModels on the screen is also updated continuously
     private void updateSquares(float dt){
-        for (int i = 0; i < recipe.squares.size(); i++) {
-            for (int j = 0; j < recipe.squares.get(i).size() ; j++) {
-                recipe.squares.get(i).get(j).update(dt);
+        for (int i = 0; i < recipe.pattern.size(); i++) {
+            for (int j = 0; j < recipe.pattern.get(i).size() ; j++) {
+                recipe.pattern.get(i).get(j).update(dt);
             }
         }
     }

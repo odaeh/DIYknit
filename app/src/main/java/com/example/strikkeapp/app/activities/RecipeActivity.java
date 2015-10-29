@@ -36,7 +36,7 @@ public class RecipeActivity extends Activity {
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
-        BoardModel bModel = intent.getParcelableExtra("squares");
+        BoardModel bModel = intent.getParcelableExtra("boardmodel");
         circumference = Integer.parseInt(intent.getExtras().getString("circumference"));
         stitches = Integer.parseInt(intent.getExtras().getString("stitches"));
         rows = Integer.parseInt(intent.getExtras().getString("rows"));

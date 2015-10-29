@@ -100,7 +100,7 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         int size = source.readInt();
         int squareSize = (source.readInt() / 2);
 
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
+        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular square
         int[] patternValues = new int[size * size];
         source.readIntArray(patternValues);
         pattern = new ArrayList<ArrayList<SquareModel>>();
