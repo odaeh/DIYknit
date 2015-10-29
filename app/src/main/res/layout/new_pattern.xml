@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/knitted">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:id="@+id/info"
+        android:background="@drawable/customboder"
+        android:layout_below = "@id/title"
+        android:layout_marginTop="30dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+        <TextView
+            android:id="@+id/circumferenceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:text="Circumference (cm): "
+            android:textStyle="bold"/>
+
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:id="@+id/circumference"
+            android:inputType="text"
+            android:layout_margin="10dp"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            />
+
+            <TextView
+                android:id="@+id/gauge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:text="Gauge 10x10 cm (sts, rows): "
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:id="@+id/stitch"
+                android:inputType="text"
+                android:layout_margin="10dp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/white"
+                />
+            <EditText
+                android:layout_width="250dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:id="@+id/rows"
+                android:inputType="text"
+                android:layout_margin="10dp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/white"
+                />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Ok"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/button"
+            android:id="@+id/next"/>
+    </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

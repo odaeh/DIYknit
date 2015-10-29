@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/knitted">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:textStyle="italic|bold"
+        android:textColor="#4B7948"
+        android:text="Create your own pattern:"
+        android:layout_margin="15dp"
+        android:layout_gravity="center"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/customboder"
+        android:id="@+id/drawView"
+        android:layout_below = "@id/title">
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/instructions1"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:text="1. Draw a pattern (click twice to erase)"
+                android:layout_marginBottom="7dp"
+                android:layout_marginTop="7dp"
+            />
+            <TextView
+                android:id="@+id/instructions2"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:text="2. Save it"
+                android:layout_marginBottom="7dp"
+            />
+             <TextView
+                android:id="@+id/instructions3"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:text="3. Receive a personalised knitting recipe"
+            />
+        </LinearLayout>
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:background="@drawable/button"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/saveButton"/>
+</LinearLayout>
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</LinearLayout>
