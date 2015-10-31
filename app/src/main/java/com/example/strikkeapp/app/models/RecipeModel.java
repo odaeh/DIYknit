@@ -18,6 +18,7 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int rows;
     int numCasts;
     public BoardModel bModel;
+    int columns = 30;
 
     // CONSTRUCTOR
     public RecipeModel(BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
@@ -27,21 +28,28 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         this.screenWidth = screenWidth;
         this.bModel = bModel;
 
-        createSquares(15, 30);
+        createSquares(bModel.getPattern().size(), columns-calculateCropLength());
         generatePattern(bModel.getPattern());
 
         calculateCasts();
     }
 
-    public void printArray(ArrayList<ArrayList<SquareModel>> list){
-        for (int i = 0; i < list.size(); i++) {
-            for (int j = 0; j < list.get(i).size(); j++) {
-                char state = list.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
-                System.out.print(state);
+    public int calculateCropLength(){
+        return columns - ((getNumMultiplePatterns(bModel.getPattern())*bModel.getPattern().get(0).size()));
+    }
+
+    public ArrayList<ArrayList<SquareModel>> createSquares(int rows, int columns){
+        Vector2 sizeVec = new Vector2(bModel.squareSize/2, bModel.squareSize/2); // rectangular square
+        for (int i = 0; i < rows; i++) {
+            squares.add(new ArrayList<SquareModel>());
+            for (int j = 0; j < columns; j++) {
+                Vector2 pos = new Vector2(bModel.squareSize * j/2, bModel.squareSize * i/2);
+                SquareModel square = new SquareModel(pos, sizeVec);
+                square.setSize(bModel.squareSize/2);
+                squares.get(i).add(square);
             }
-            System.out.println(" ");
         }
-        System.out.println(" --- ");
+        return squares;
     }
 
     public void generatePattern(ArrayList<ArrayList<SquareModel>> pattern){
@@ -64,22 +72,19 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         }
     }
 
-    public ArrayList<ArrayList<SquareModel>> createSquares(int rows, int columns){
-        Vector2 sizeVec = new Vector2(bModel.squareSize/2, bModel.squareSize/2); // rectangular square
-        for (int i = 0; i < rows; i++) {
-            squares.add(new ArrayList<SquareModel>());
-            for (int j = 0; j < columns; j++) {
-                Vector2 pos = new Vector2(bModel.squareSize * j/2, bModel.squareSize * i/2);
-                SquareModel square = new SquareModel(pos, sizeVec);
-                square.setSize(bModel.squareSize/2);
-                squares.get(i).add(square);
+    public void printArray(ArrayList<ArrayList<SquareModel>> list){
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).size(); j++) {
+                char state = list.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
+                System.out.print(state);
             }
+            System.out.println(" ");
         }
-        return squares;
+        System.out.println(" --- ");
     }
 
     public int getNumMultiplePatterns(ArrayList<ArrayList<SquareModel>> pattern){
-        return (squares.get(0).size()/pattern.get(0).size()); // er plass til 30 ruter bortover da de tegnes i halv størrelse
+        return (columns/pattern.get(0).size()); // er plass til 30 ruter bortover da de tegnes i halv størrelse
     }
 
     public int calculateCasts(){
