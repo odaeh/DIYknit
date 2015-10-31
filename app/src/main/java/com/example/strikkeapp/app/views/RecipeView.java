@@ -26,46 +26,36 @@ public class RecipeView extends State {
         this.recipe = recipe;
         this.activity = activity;
         width = display.getWidth();
+        calculateSquareSize();
     }
 
     // the size of the squares depends on the number of squares in a row and the width of the actual screen
     public void calculateSquareSize(){
         int rows = recipe.squares.size();
-        squareSize = (int) (width / rows); // width of a square
+        //squareSize = (int) (width / rows)/4; // width of a square
+
+        for (int i = 0; i < recipe.squares.size(); i++) {
+            for (int j = 0; j < recipe.squares.get(i).size(); j++) {
+                int squareSize = recipe.bModel.squareSize;
+               recipe.squares.get(i).get(j).setSize(squareSize / 10);
+            }
+        }
     }
 
     // Draw the squares on the canvas
     public void draw (Canvas canvas){
-        calculateSquareSize();
-        int numPatterns = recipe.getNumMultiplePatterns();
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
-        ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();
-
-        for (int i = 0; i < recipe.squares.size(); i++) {
-            ArrayList<SquareModel> squareRow = new ArrayList<SquareModel>();
-            for (int j = 0; j < recipe.squares.get(i).size(); j++) {
-                Vector2 pos = new Vector2(squareSize * j, squareSize * i);
-                SquareModel square = new SquareModel(pos, sizeVec);
-                square.setSize(squareSize);
-                squareRow.add(square);
-            }
-            for (int k = 0; k < numPatterns; k++) {
-                squares.add(k, squareRow);
-            }
-        }
-        if (canvas == null) return;
         canvas.drawColor(Color.rgb(151, 177, 174));
         drawSquares(canvas);
     }
 
-
     // Draw the square states that is received from the pattern
    private void drawSquares(Canvas canvas) {
+       calculateSquareSize();
        for (int i = 0; i < recipe.squares.size(); i++) {
            for (int j = 0; j < recipe.squares.get(i).size(); j++) {
                recipe.squares.get(i).get(j).draw(canvas);
-               }
            }
+       }
    }
 
     public void update(float dt){

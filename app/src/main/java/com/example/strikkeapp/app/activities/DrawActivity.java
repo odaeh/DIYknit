@@ -41,6 +41,8 @@ public class DrawActivity extends Activity {
         board = new BoardModel(drawing);
         final DrawBoardView view = new DrawBoardView(board, display, this);
 
+
+
         game.pushState(view);
         setContentView(R.layout.drawing);
 

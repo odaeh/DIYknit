@@ -21,7 +21,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     private DrawActivity activity;
     private float width;
     private BoardModel board;
-    private int squareSize;
+    public int squareSize;
     private boolean doneInitializing = false;
     private ArrayList<ArrayList<SquareModel>> squares;
 
@@ -31,9 +31,11 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         this.board = board;
         this.board.addListener(this);
         this.activity = activity;
-        width = display.getWidth();
+        this.width = display.getWidth();
+
         initializeSquares();
         doneInitializing = true;
+        board.squareSize = squareSize;
     }
 
     // when a view is made the squares must be placed on the screen.

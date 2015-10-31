@@ -3,100 +3,58 @@ package com.example.strikkeapp.app.models;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import sheep.math.Vector2;
+
 /**
  * Created by oda on 03.06.15.
  */
 public class RecipeModel extends SimpleObservable <RecipeModel> {
 
     int patternId;
-    public ArrayList<ArrayList<SquareModel>> squares;
-    int width;
-    int height;
+    public ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();
     int screenWidth;
-    int squareSize;
     int circumference;
     int stitches;
     int rows;
     int numCasts;
-    int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
+    public BoardModel bModel;
 
     // CONSTRUCTOR
-    public RecipeModel(ArrayList<ArrayList<SquareModel>> squares, int circumference, int stitches, int rows, int screenWidth) {
-        this.squares = squares;
+    public RecipeModel(BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
         this.circumference = circumference;
         this.rows = rows;
         this.stitches = stitches;
         this.screenWidth = screenWidth;
-        printArray();
-        getSizeOfPattern();
-        //resizePattern();
+        this.bModel = bModel;
+
+        createSquares(15, 30);
+        generatePattern(bModel.getPattern());
+
         calculateCasts();
     }
 
-    public void getSizeOfPattern() {
-        ArrayList<Integer> horizontal = new ArrayList<Integer>();
-        ArrayList<Integer> vertical = new ArrayList<Integer>();
-
-        for (int i = 0; i < squares.size(); i++) {
-            for (int j = 0; j < squares.size(); j++) {
-                SquareState state = squares.get(i).get(j).getSquareState();
-                squareSize = squares.get(i).get(j).getSquareSize();
-
-                if (state == SquareState.FULL) {
-                    horizontal.add((int) squares.get(i).get(j).getPosition().getX());
-                    vertical.add((int) squares.get(i).get(j).getPosition().getY());
-                }
-            }
-        }
-        Collections.sort(horizontal);
-        actualPatternDim[0] = horizontal.get(0); // Left
-        actualPatternDim[1] = horizontal.get(horizontal.size() - 1); // Right
-        Collections.sort(vertical);
-        actualPatternDim[2] = vertical.get(0); // Top
-        actualPatternDim[3] = vertical.get(vertical.size() - 1); // Bottom
-
-        width = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
-        height = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
-    }
-
-    public void printArray(){
-        for (int i = 0; i < squares.size(); i++) {
-            for (int j = 0; j < squares.size(); j++) {
-                char state = squares.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
+    public void printArray(ArrayList<ArrayList<SquareModel>> list){
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).size(); j++) {
+                char state = list.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
                 System.out.print(state);
             }
             System.out.println(" ");
         }
+        System.out.println(" --- ");
     }
 
-    public void generatePattern(){
-        ArrayList<ArrayList<SquareModel>> pattern =extractPattern();
-        int num = getNumMultiplePatterns();
-        for (int col = 0; col < num ; col ++){
-            printArray();
-            insertPattern(0, col* pattern.size(), pattern);
+    public void generatePattern(ArrayList<ArrayList<SquareModel>> pattern){
+        int num = getNumMultiplePatterns(pattern);
+        System.out.println("Pattern Rows: " + pattern.size() + "Column: " + pattern.get(0).size() + ", Num: "+num);
+        for (int col = 0; col < num ; col++){
+            printArray(pattern);
+            insertPattern(0, col* pattern.get(0).size(), pattern);
         }
-    }
-
-    public ArrayList<ArrayList<SquareModel>> extractPattern() {
-        ArrayList<ArrayList<SquareModel>> newSquares = new ArrayList<ArrayList<SquareModel>>();
-
-        for (int i = 0; i < squares.size(); i++) {
-            ArrayList<SquareModel> newSquareRow = new ArrayList<SquareModel>();
-            System.out.println(squares.size()+ " " + squares.get(i).size());
-            for (int j = 0; j < squares.get(i).size(); j++) {
-                if (getXpos(squares, i, j) >= actualPatternDim[0] && squares.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && squares.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && squares.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
-                    newSquareRow.add(squares.get(i).get(j));
-                }
-            }
-            newSquares.add(newSquareRow);
-            System.out.println("antall mønster i bord: " + getNumMultiplePatterns());
-           // System.out.println("størrelse på rad: " + newSquareRow.size());
-        }
-        return newSquares;
     }
 
     public void insertPattern(int i, int j, ArrayList<ArrayList<SquareModel>> pattern){
+        printArray(squares);
         for (int row = 0; row < pattern.size(); row++){
             for (int col = 0; col < pattern.get(row).size(); col++){
                 int squareRow = i + row;
@@ -106,8 +64,22 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         }
     }
 
-    public float getXpos(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
-        return pattern.get(i).get(j).getPosition().getX();
+    public ArrayList<ArrayList<SquareModel>> createSquares(int rows, int columns){
+        Vector2 sizeVec = new Vector2(bModel.squareSize/2, bModel.squareSize/2); // rectangular square
+        for (int i = 0; i < rows; i++) {
+            squares.add(new ArrayList<SquareModel>());
+            for (int j = 0; j < columns; j++) {
+                Vector2 pos = new Vector2(bModel.squareSize * j/2, bModel.squareSize * i/2);
+                SquareModel square = new SquareModel(pos, sizeVec);
+                square.setSize(bModel.squareSize/2);
+                squares.get(i).add(square);
+            }
+        }
+        return squares;
+    }
+
+    public int getNumMultiplePatterns(ArrayList<ArrayList<SquareModel>> pattern){
+        return (squares.get(0).size()/pattern.get(0).size()); // er plass til 30 ruter bortover da de tegnes i halv størrelse
     }
 
     public int calculateCasts(){
@@ -116,7 +88,5 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         return  numCasts;
     }
 
-    public int getNumMultiplePatterns(){
-        return (screenWidth / squareSize) / width; // er plass til 30 ruter bortover da de tegnes i halv størrelse
-    }
+
 }
