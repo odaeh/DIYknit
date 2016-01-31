@@ -5,11 +5,7 @@ import android.graphics.Color;
 import android.view.Display;
 import com.example.strikkeapp.app.activities.RecipeActivity;
 import com.example.strikkeapp.app.models.RecipeModel;
-import com.example.strikkeapp.app.models.SquareModel;
-
-import java.util.ArrayList;
 import sheep.game.State;
-import sheep.math.Vector2;
 
 /**
  * Created by oda on 03.06.15.
@@ -44,6 +40,7 @@ public class RecipeView extends State {
 
     // Draw the squares on the canvas
     public void draw (Canvas canvas){
+        if (canvas == null) return;
         canvas.drawColor(Color.rgb(151, 177, 174));
         drawSquares(canvas);
     }

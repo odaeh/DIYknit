@@ -6,7 +6,6 @@ import com.example.strikkeapp.app.models.OnChangeListener;
 import com.example.strikkeapp.app.models.SquareModel;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import java.util.ArrayList;

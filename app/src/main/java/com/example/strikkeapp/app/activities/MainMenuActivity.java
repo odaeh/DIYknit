@@ -43,7 +43,8 @@ public class MainMenuActivity extends Activity {
         existingPattern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // Linke til en aktivitet med en liste av eksisterende mønstre og hhv. oppskrifter
+                Intent intent = new Intent(MainMenuActivity.this, ExistingPatternActivity.class);
+                startActivity(intent);
             }
         });
 

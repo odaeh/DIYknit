@@ -2,15 +2,8 @@ package com.example.strikkeapp.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-import android.view.Display;
-
-import com.example.strikkeapp.app.activities.DrawActivity;
-import com.example.strikkeapp.app.views.DrawBoardView;
-
 import java.util.ArrayList;
 import java.util.Collections;
-
 import sheep.math.Vector2;
 
 /**
@@ -26,6 +19,8 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
     int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
     int width;
     int height;
+    public String patternID;
+    public int [] patternValues;
 
     // CONSTRUCTOR
     public BoardModel(DrawingModel drawing){
@@ -40,12 +35,13 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         squareSize = source.readInt();
         width = source.readInt();
 
-        int[] patternValues = new int[size * size];
+        this.patternValues = new int[size * size];
         source.readIntArray(patternValues);
 
         pattern = createSquares(size, patternValues);
     }
 
+    // Using the int [] patternValues to build the pattern
     public ArrayList<ArrayList<SquareModel>> createSquares(int size, int[] patternValues){
         Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular square
         pattern = new ArrayList<ArrayList<SquareModel>>();
@@ -167,16 +163,20 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
 
     // Used when sending data
     public void writeToParcel(Parcel dest, int flags){
+        dest.writeInt(pattern.size());
+        dest.writeInt(squareSize);
+        dest.writeInt(width);
+        dest.writeIntArray(getPatternAsList());
+    }
+
+    public int[] getPatternAsList(){
         int[] patternValues = new int[pattern.size()*pattern.size()];
         for (int i = 0; i < pattern.size(); i++) {
             for (int j = 0; j < pattern.get(i).size(); j++) {
                 patternValues[i*pattern.size()+j] = pattern.get(i).get(j).getSquareState().value;
             }
         }
-        dest.writeInt(pattern.size());
-        dest.writeInt(squareSize);
-        dest.writeInt(width);
-        dest.writeIntArray(patternValues);
+        return patternValues;
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

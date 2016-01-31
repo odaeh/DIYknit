@@ -10,7 +10,7 @@ import sheep.math.Vector2;
  */
 public class RecipeModel extends SimpleObservable <RecipeModel> {
 
-    int patternId;
+    String patternID;
     public ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();
     int screenWidth;
     int circumference;
@@ -21,15 +21,16 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int columns = 30;
 
     // CONSTRUCTOR
-    public RecipeModel(BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
+    public RecipeModel(String patternID, BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
         this.circumference = circumference;
         this.rows = rows;
         this.stitches = stitches;
         this.screenWidth = screenWidth;
         this.bModel = bModel;
+        this.patternID = patternID;
 
         createSquares(bModel.getPattern().size(), columns-calculateCropLength());
-        generatePattern(bModel.getPattern());
+        generateBorder(bModel.getPattern());
 
         calculateCasts();
     }
@@ -38,6 +39,7 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         return columns - ((getNumMultiplePatterns(bModel.getPattern())*bModel.getPattern().get(0).size()));
     }
 
+    // Add squares to the board
     public ArrayList<ArrayList<SquareModel>> createSquares(int rows, int columns){
         Vector2 sizeVec = new Vector2(bModel.squareSize/2, bModel.squareSize/2); // rectangular square
         for (int i = 0; i < rows; i++) {
@@ -52,17 +54,19 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         return squares;
     }
 
-    public void generatePattern(ArrayList<ArrayList<SquareModel>> pattern){
+    // Add multiple patterns after each other to create a border
+    public void generateBorder(ArrayList<ArrayList<SquareModel>> pattern){
         int num = getNumMultiplePatterns(pattern);
-        System.out.println("Pattern Rows: " + pattern.size() + "Column: " + pattern.get(0).size() + ", Num: "+num);
+       // System.out.println("Pattern Rows: " + pattern.size() + "Column: " + pattern.get(0).size() + ", Num: "+num);
         for (int col = 0; col < num ; col++){
             printArray(pattern);
             insertPattern(0, col* pattern.get(0).size(), pattern);
         }
     }
 
+    // Add pattern to the squares
     public void insertPattern(int i, int j, ArrayList<ArrayList<SquareModel>> pattern){
-        printArray(squares);
+        //printArray(squares);
         for (int row = 0; row < pattern.size(); row++){
             for (int col = 0; col < pattern.get(row).size(); col++){
                 int squareRow = i + row;
@@ -88,7 +92,6 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     }
 
     public int calculateCasts(){
-
         System.out.println("masker: " + numCasts);
         return  numCasts;
     }

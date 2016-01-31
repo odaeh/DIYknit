@@ -5,29 +5,36 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.strikkeapp.app.R;
+import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.RecipeModel;
 import com.example.strikkeapp.app.views.RecipeView;
+
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
 import sheep.game.Game;
 
 public class RecipeActivity extends Activity {
 
     private RecipeModel recipe;
-    private int drawingID;
     public int circumference;
     public int stitches;
     public int rows;
-
+    private Button button;
+    private BoardModel bModel;
     private TextView recipeText;
+    private String patternID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
-        setViewElements();
 
         Game game = new Game(this, null);
 
@@ -36,12 +43,13 @@ public class RecipeActivity extends Activity {
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
-        BoardModel bModel = intent.getParcelableExtra("boardmodel");
-        circumference = Integer.parseInt(intent.getExtras().getString("circumference"));
-        stitches = Integer.parseInt(intent.getExtras().getString("stitches"));
-        rows = Integer.parseInt(intent.getExtras().getString("rows"));
+        this.bModel = intent.getParcelableExtra("boardmodel");
+        this.patternID = intent.getStringExtra("patternID");
+        this.circumference = Integer.parseInt(Resources.circumference);
+        this.stitches = Integer.parseInt(Resources.stitches);
+        this.rows = Integer.parseInt(Resources.rows);
 
-        RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, rows, width);
+        RecipeModel recipe = new RecipeModel(patternID, bModel, circumference, stitches, rows, width);
         RecipeView view = new RecipeView(recipe, this, display);
         game.pushState(view);
 
@@ -52,15 +60,19 @@ public class RecipeActivity extends Activity {
         linearLayout.addView(game);
 
         setRecipeText();
-    }
 
-    private void setViewElements() {
-        recipeText = (TextView) findViewById(R.id.recipeText);
-        recipeText.setText("Legg opp ");
-    }
+        button = (Button) findViewById(R.id.backButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+            }
+        });
+    } //OnCreate
 
     private void setRecipeText(){
-       int numCasts = (circumference / 10); //10 stitches pr cm
+       recipeText = (TextView) findViewById(R.id.recipeText);
+       int numCasts = (circumference * 10); //10 stitches pr cm
        recipeText.setText("Legg opp " + numCasts + " masker.");
     }
 }

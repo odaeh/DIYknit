@@ -44,6 +44,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.strikkeapp.app.activities.ExistingPatternActivity"
+            android:label="DIY Knitting Pattern" >
+        </activity>
     </application>
 
     <uses-sdk
