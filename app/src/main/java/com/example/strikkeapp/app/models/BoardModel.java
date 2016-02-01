@@ -19,7 +19,6 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
     int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
     int width;
     int height;
-    public String patternID;
     public int [] patternValues;
 
     // CONSTRUCTOR
@@ -38,6 +37,9 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         this.patternValues = new int[size * size];
         source.readIntArray(patternValues);
 
+        // NEED TO SWITCH patternValues WITH patternAsList FROM
+        // RecipeActivity IF IT IS TO RETRIEVE A STORED PATTERN
+        // NEED TO LISTEN TO MainMenuActivity?
         pattern = createSquares(size, patternValues);
     }
 
@@ -112,13 +114,14 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         this.pattern = pattern;
     }
 
+    // Retrieves the actual pattern based on the black squares
     public ArrayList<ArrayList<SquareModel>> getPattern() {
         getSizeOfPattern();
         ArrayList<ArrayList<SquareModel>> newSquares = new ArrayList<ArrayList<SquareModel>>();
 
         for (int i = 0; i < pattern.size(); i++) {
             ArrayList<SquareModel> newSquareRow = new ArrayList<SquareModel>();
-            System.out.println(pattern.size()+ " " + pattern.get(i).size());
+            //System.out.println(pattern.size()+ " " + pattern.get(i).size());
             for (int j = 0; j < pattern.get(i).size(); j++) {
                 if (getXpos(pattern, i, j) >= actualPatternDim[0] && pattern.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && pattern.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && pattern.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
                     newSquareRow.add(pattern.get(i).get(j));

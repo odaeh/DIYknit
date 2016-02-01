@@ -9,14 +9,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.RecipeModel;
 import com.example.strikkeapp.app.views.RecipeView;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import sheep.game.Game;
 
@@ -30,6 +37,9 @@ public class RecipeActivity extends Activity {
     private BoardModel bModel;
     private TextView recipeText;
     private String patternID;
+    public static String storedPattern = "storedPattern.txt";
+    public int[] patternAsList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +51,13 @@ public class RecipeActivity extends Activity {
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
 
+        readStoredFile();
+
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
-        this.bModel = intent.getParcelableExtra("boardmodel");
+        this.bModel = intent.getParcelableExtra("boardModel");
         this.patternID = intent.getStringExtra("patternID");
+        this.storedPattern = intent.getStringExtra("storedPattern");
         this.circumference = Integer.parseInt(Resources.circumference);
         this.stitches = Integer.parseInt(Resources.stitches);
         this.rows = Integer.parseInt(Resources.rows);
@@ -74,5 +87,20 @@ public class RecipeActivity extends Activity {
        recipeText = (TextView) findViewById(R.id.recipeText);
        int numCasts = (circumference * 10); //10 stitches pr cm
        recipeText.setText("Legg opp " + numCasts + " masker.");
+    }
+
+    public void readStoredFile(){
+        try {
+            Scanner scanner = new Scanner(System.in);
+            List<Integer> list = new ArrayList<Integer>();
+            while (scanner.hasNextInt())
+                list.add(scanner.nextInt());
+            for (int i = 0; i < patternAsList.length; i++){
+                patternAsList[i] = list.get(i).intValue();
+            }
+        }
+        catch (Throwable t) {
+            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 }

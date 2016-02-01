@@ -7,21 +7,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
-import sheep.game.Game;
 
 public class ExistingPatternActivity extends Activity {
 
     private BoardModel bModel;
-    private TextView test;
     private Button button1;
     private Button button2;
     private Button button3;
     private Button backButton;
-    private Resources resource;
     private String patternID;
 
     @Override
@@ -39,12 +35,16 @@ public class ExistingPatternActivity extends Activity {
     } //OnCreate
 
     private void setViewElements() {
+        button1 = (Button) findViewById(R.id.choosePattern1);
+        button2 = (Button) findViewById(R.id.choosePattern2);
         button3 = (Button) findViewById(R.id.choosePattern3);
-        if (resource.fifo.isEmpty()){
+
+        // Top button
+        if (Resources.fifo.isEmpty()){
             button3.setText("");
         }
         else{
-            patternID = resource.fifo.get(0).toString();
+            patternID = Resources.fifo.get(0).toString();
             button3.setText(patternID);
         }
         button3.setOnClickListener(new View.OnClickListener() {
@@ -55,12 +55,12 @@ public class ExistingPatternActivity extends Activity {
             }
         });
 
-        button2 = (Button) findViewById(R.id.choosePattern2);
-        if (resource.fifo.size() < 2){
+        // Middle button
+        if (Resources.fifo.size() < 2){
             button2.setText("");
         }
         else{
-            patternID = resource.fifo.get(1).toString();
+            patternID = Resources.fifo.get(1).toString();
             button2.setText(patternID);
         }
         button2.setOnClickListener(new View.OnClickListener() {
@@ -69,12 +69,12 @@ public class ExistingPatternActivity extends Activity {
             }
         });
 
-        button1 = (Button) findViewById(R.id.choosePattern1);
-        if (resource.fifo.size() < 3){
+        // Bottom button
+        if (Resources.fifo.size() < 3){
             button1.setText("");
         }
         else{
-            patternID = resource.fifo.get(2).toString();
+            patternID = Resources.fifo.get(2).toString();
             button1.setText(patternID);
         }
         button1.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +83,7 @@ public class ExistingPatternActivity extends Activity {
             }
         });
 
+        // Back button
         backButton = (Button) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

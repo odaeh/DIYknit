@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.OutputStreamWriter;
 import java.util.regex.Pattern;
@@ -34,7 +35,7 @@ public class DrawActivity extends Activity {
     private TextView text;
     private String patternID = "";
     final Context context = this;
-    public static String storePattern = "storePattern.txt";
+    public static String storedPattern = "storedPattern.txt";
 
 
     @Override
@@ -74,10 +75,13 @@ public class DrawActivity extends Activity {
                     @Override
                     public void onClick (DialogInterface dialog, int which){
 
+                        saveClicked(board);
+
                         // Send the pattern to generate a recipe
                         Intent intent = new Intent (DrawActivity.this, RecipeActivity.class);
-                        intent.putExtra("boardmodel", board);
+                        intent.putExtra("boardModel", board);
                         intent.putExtra("patternID" , patternID);
+                        intent.putExtra("storedPattern", storedPattern);
 
                         // Store patternID in stack in Resources
                         patternID = input.getText().toString();
@@ -85,8 +89,7 @@ public class DrawActivity extends Activity {
                             Resources.fifo.removeFirst();
                         }
                         Resources.fifo.add(patternID); // adding to the end of the list
-                        Resources.pattern = storePattern;
-                        saveClicked(board);
+                        Resources.pattern = storedPattern;
 
                         board.isFinished = true;
                         board.receivePattern(view.sendFinishedPattern());
@@ -105,18 +108,19 @@ public class DrawActivity extends Activity {
         });
     }
 
+    // Saving the pattern as a list in a file named "storePattern"
     private void saveClicked(BoardModel bModel) {
         try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(storePattern, 0));
+            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(storedPattern, 0));
             int[] pattern = bModel.getPatternAsList();
-            out.write(patternID);
             for (int i = 0; i < pattern.length; i++) {
                 out.write(i);
             }
-            System.out.println("Filen er lagret!");
             out.close();
-        } catch (Throwable t) {
-
+            Toast.makeText(this, "Pattern is saved.", Toast.LENGTH_LONG).show();
+        }
+        catch (Throwable t) {
+            Toast.makeText(this, "Exception: "+t.toString(), Toast.LENGTH_LONG).show();
         }
     }
 }

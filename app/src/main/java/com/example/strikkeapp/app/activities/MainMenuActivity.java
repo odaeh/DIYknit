@@ -43,6 +43,8 @@ public class MainMenuActivity extends Activity {
         existingPattern.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // NEED TO TELL BoardModel THAT THIS BUTTON HAS BEEN PUSHED
+                // SO THAT THE STORED PATTERN CAN BE SHOWN
                 Intent intent = new Intent(MainMenuActivity.this, ExistingPatternActivity.class);
                 startActivity(intent);
             }
