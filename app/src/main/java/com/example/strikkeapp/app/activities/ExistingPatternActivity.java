@@ -31,7 +31,6 @@ public class ExistingPatternActivity extends Activity {
 
         Intent intent = getIntent();
         this.bModel = intent.getParcelableExtra("boardmodel");
-        //this.patternID = intent.getStringExtra("patternID");
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.existingView);
 
@@ -40,17 +39,15 @@ public class ExistingPatternActivity extends Activity {
     } //OnCreate
 
     private void setViewElements() {
-        button1 = (Button) findViewById(R.id.choosePattern1);
-       // if (resource.borders.size() == 0){
-        if (resource.fifo.size() == 0){
-            button1.setText("");
+        button3 = (Button) findViewById(R.id.choosePattern3);
+        if (resource.fifo.isEmpty()){
+            button3.setText("");
         }
         else{
-           // button1.setText(resource.borders.get(0));
-            patternID = resource.fifo.pop().toString();
-            button1.setText(patternID);
+            patternID = resource.fifo.get(0).toString();
+            button3.setText(patternID);
         }
-        button1.setOnClickListener(new View.OnClickListener() {
+        button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ExistingPatternActivity.this, RecipeActivity.class);
@@ -59,13 +56,11 @@ public class ExistingPatternActivity extends Activity {
         });
 
         button2 = (Button) findViewById(R.id.choosePattern2);
-       // if (resource.borders.size() == 0){
-        if (resource.fifo.size() == 0){
+        if (resource.fifo.size() < 2){
             button2.setText("");
         }
         else{
-            //button2.setText(resource.borders.get(1));
-            patternID = resource.fifo.pop().toString();
+            patternID = resource.fifo.get(1).toString();
             button2.setText(patternID);
         }
         button2.setOnClickListener(new View.OnClickListener() {
@@ -74,17 +69,15 @@ public class ExistingPatternActivity extends Activity {
             }
         });
 
-        button3 = (Button) findViewById(R.id.choosePattern3);
-        //if (resource.borders.size() == 0){
-        if (resource.fifo.size() == 0){
-            button3.setText("");
+        button1 = (Button) findViewById(R.id.choosePattern1);
+        if (resource.fifo.size() < 3){
+            button1.setText("");
         }
         else{
-            //button3.setText(resource.borders.get(1));
-            patternID = resource.fifo.pop().toString();
-            button3.setText(patternID);
+            patternID = resource.fifo.get(2).toString();
+            button1.setText(patternID);
         }
-        button3.setOnClickListener(new View.OnClickListener() {
+        button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }

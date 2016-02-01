@@ -81,9 +81,10 @@ public class DrawActivity extends Activity {
 
                         // Store patternID in stack in Resources
                         patternID = input.getText().toString();
-                       // Resources.fifo.pop();
-                        Resources.fifo.push(patternID);
-                        //Resources.borders.add(patternID);
+                        if (Resources.fifo.size() >= 3){
+                            Resources.fifo.removeFirst();
+                        }
+                        Resources.fifo.add(patternID); // adding to the end of the list
                         Resources.pattern = storePattern;
                         saveClicked(board);
 
