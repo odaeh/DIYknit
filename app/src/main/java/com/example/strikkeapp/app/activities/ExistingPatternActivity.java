@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
@@ -51,6 +50,7 @@ public class ExistingPatternActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ExistingPatternActivity.this, RecipeActivity.class);
+                Resources.existingID = "1";
                 startActivity(intent);
             }
         });
@@ -66,6 +66,9 @@ public class ExistingPatternActivity extends Activity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(ExistingPatternActivity.this, RecipeActivity.class);
+                Resources.existingID = "2";
+                startActivity(intent);
             }
         });
 
@@ -80,6 +83,9 @@ public class ExistingPatternActivity extends Activity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(ExistingPatternActivity.this, RecipeActivity.class);
+                Resources.existingID = "3";
+                startActivity(intent);
             }
         });
 

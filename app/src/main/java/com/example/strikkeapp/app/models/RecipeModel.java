@@ -21,13 +21,13 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int columns = 30;
 
     // CONSTRUCTOR
-    public RecipeModel(String patternID, BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
+    public RecipeModel(BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
         this.circumference = circumference;
         this.rows = rows;
         this.stitches = stitches;
         this.screenWidth = screenWidth;
         this.bModel = bModel;
-        this.patternID = patternID;
+        //this.patternID = patternID;
 
         createSquares(bModel.getPattern().size(), columns-calculateCropLength());
         generateBorder(bModel.getPattern());
@@ -80,11 +80,11 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).size(); j++) {
                 char state = list.get(i).get(j).getSquareState() == SquareState.EMPTY ? '.' : '*';
-                System.out.print(state);
+                //System.out.print(state);
             }
-            System.out.println(" ");
+            //System.out.println(" ");
         }
-        System.out.println(" --- ");
+        //System.out.println(" --- ");
     }
 
     public int getNumMultiplePatterns(ArrayList<ArrayList<SquareModel>> pattern){

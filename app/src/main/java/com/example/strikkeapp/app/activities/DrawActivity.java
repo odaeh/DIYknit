@@ -17,12 +17,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.regex.Pattern;
+import java.io.PrintWriter;
 
 import sheep.game.Game;
 
@@ -35,7 +39,7 @@ public class DrawActivity extends Activity {
     private TextView text;
     private String patternID = "";
     final Context context = this;
-    public static String storedPattern = "storedPattern.txt";
+    public int[] pattern;
 
 
     @Override
@@ -81,7 +85,6 @@ public class DrawActivity extends Activity {
                         Intent intent = new Intent (DrawActivity.this, RecipeActivity.class);
                         intent.putExtra("boardModel", board);
                         intent.putExtra("patternID" , patternID);
-                        intent.putExtra("storedPattern", storedPattern);
 
                         // Store patternID in stack in Resources
                         patternID = input.getText().toString();
@@ -89,7 +92,6 @@ public class DrawActivity extends Activity {
                             Resources.fifo.removeFirst();
                         }
                         Resources.fifo.add(patternID); // adding to the end of the list
-                        Resources.pattern = storedPattern;
 
                         board.isFinished = true;
                         board.receivePattern(view.sendFinishedPattern());
@@ -110,17 +112,49 @@ public class DrawActivity extends Activity {
 
     // Saving the pattern as a list in a file named "storePattern"
     private void saveClicked(BoardModel bModel) {
-        try {
-            OutputStreamWriter out = new OutputStreamWriter(openFileOutput(storedPattern, 0));
-            int[] pattern = bModel.getPatternAsList();
-            for (int i = 0; i < pattern.length; i++) {
-                out.write(i);
-            }
-            out.close();
-            Toast.makeText(this, "Pattern is saved.", Toast.LENGTH_LONG).show();
+        try{
+            pattern = bModel.getPatternAsList();
+            write(pattern);
         }
         catch (Throwable t) {
             Toast.makeText(this, "Exception: "+t.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void write (int[] pattern) throws IOException{
+        File file = new File("src\\savedPattern.txt");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        for (int i = 0; i < pattern.length; i++){
+            bw.write(pattern[i]);
+        }
+        bw.close();
+    }
+
+    private void addStoredPattern(String storedPattern){
+        if (Resources.storedPatterns[0].equals("")){
+            Resources.storedPatterns[0] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatterns[0]);
+        }
+        else if (Resources.storedPatterns[1].equals("")){
+            Resources.storedPatterns[1] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatterns[1]);
+
+        }
+        else if (Resources.storedPatterns[2].equals("")){
+            Resources.storedPatterns[2] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatterns[2]);
+
+        }
+        else{ // the first pattern is deleted and replaced
+            Resources.storedPatterns[0] = storedPattern;
         }
     }
 }

@@ -2,7 +2,11 @@ package com.example.strikkeapp.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.example.strikkeapp.app.Resources;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import sheep.math.Vector2;
 
@@ -28,7 +32,7 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         initGrid(drawing);
     }
 
-    // Used when receiving data
+    // Constructor sed when receiving data
     public BoardModel(Parcel source) {
         int size = source.readInt();
         squareSize = source.readInt();
@@ -37,9 +41,6 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         this.patternValues = new int[size * size];
         source.readIntArray(patternValues);
 
-        // NEED TO SWITCH patternValues WITH patternAsList FROM
-        // RecipeActivity IF IT IS TO RETRIEVE A STORED PATTERN
-        // NEED TO LISTEN TO MainMenuActivity?
         pattern = createSquares(size, patternValues);
     }
 
@@ -177,6 +178,7 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         for (int i = 0; i < pattern.size(); i++) {
             for (int j = 0; j < pattern.get(i).size(); j++) {
                 patternValues[i*pattern.size()+j] = pattern.get(i).get(j).getSquareState().value;
+                //System.out.println(Arrays.toString(patternValues));
             }
         }
         return patternValues;
