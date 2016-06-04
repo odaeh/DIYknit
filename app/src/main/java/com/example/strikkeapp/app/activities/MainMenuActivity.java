@@ -8,15 +8,16 @@ import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 
 public class MainMenuActivity extends Activity {
 
-    private Button newPattern;
-    private Button existingPattern;
-    private Button userGuide;
+    private Button newPatternButton;
+    private Button existingPatternButton;
+    private Button userGuideButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class MainMenuActivity extends Activity {
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(width, width));
 
 
-        newPattern = (Button) findViewById(R.id.newPattern);
-        newPattern.setOnClickListener(new View.OnClickListener() {
+        newPatternButton = (Button) findViewById(R.id.newPattern);
+        newPatternButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, MakeNewPatternActivity.class);
@@ -40,23 +41,23 @@ public class MainMenuActivity extends Activity {
             }
         });
 
-        existingPattern = (Button) findViewById(R.id.existing);
-        existingPattern.setOnClickListener(new View.OnClickListener() {
+        existingPatternButton = (Button) findViewById(R.id.existing);
+        existingPatternButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Resources.existingPushed = true;
+                Resources.existingButtonPushed = true;
                 Intent intent = new Intent(MainMenuActivity.this, ExistingPatternActivity.class);
                 startActivity(intent);
             }
         });
 
-        userGuide = (Button) findViewById(R.id.guide);
-        userGuide.setOnClickListener(new View.OnClickListener() {
+        userGuideButton = (Button) findViewById(R.id.guide);
+        userGuideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // Linke til en akrivitet med bilder og text over hvordan appen virker
+                // Linke til en akrivitet med bilder og text over hvordan appen virker
             }
         });
-
     }
+
 }

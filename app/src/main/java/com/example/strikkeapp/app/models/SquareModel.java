@@ -19,6 +19,7 @@ public class SquareModel extends Sprite{
     private SquareState state = SquareState.EMPTY;
     private Vector2 size;
     private Image currentImage = background;
+    public float scaleFactor  = 0.9f;
 
     //CONSTRUCTOR
     public SquareModel (Vector2 pos, Vector2 size){
@@ -45,7 +46,7 @@ public class SquareModel extends Sprite{
     // scale the size of the image to fit the square
     public void setSize(float size) {
         float w = currentImage.getWidth();
-        float scale = size / w * 0.9f;
+        float scale = size / w * scaleFactor;
         super.setOffset(0, 0);
         super.setScale(scale, scale);
     }

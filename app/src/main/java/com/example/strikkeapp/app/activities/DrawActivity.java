@@ -10,7 +10,6 @@ import android.view.Display;
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
-import com.example.strikkeapp.app.models.DrawingModel;
 import com.example.strikkeapp.app.views.DrawBoardView;
 import android.content.Intent;
 import android.view.View;
@@ -19,65 +18,60 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOError;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-
 import sheep.game.Game;
 
 public class DrawActivity extends Activity {
 
-    private DrawingModel drawing;
     private BoardModel board;
-    private Button button; // to be used to save a pattern
-    private int drawingID; // to be used to distinguish between several stored patterns
-    private TextView text;
+    private Button saveButton;
+    public int drawingID; // to be used to distinguish between several stored patterns
+    private TextView title;
     private String patternID = "";
     final Context context = this;
-    public int[] pattern;
+    public int[] patternList;
+    int rows = 20; //it these are changed, the number of columns in RecipeModel must be changed as well!
+    int cols = 20;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Game game = new Game(this, null);
+        Game patternModule = new Game(this, null);
 
         Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
+        int screenWidth = display.getWidth();
 
-        drawing = new DrawingModel(drawingID);
-        board = new BoardModel(drawing);
-        final DrawBoardView view = new DrawBoardView(board, display, this);
+        board = new BoardModel(rows, cols);
+        final DrawBoardView drawBoardView = new DrawBoardView(board, screenWidth, this);
 
-        game.pushState(view);
-        setContentView(R.layout.drawing);
+        patternModule.pushState(drawBoardView);
+        setContentView(R.layout.draw_pattern_screen);
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawView);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(width, width+30));
-        linearLayout.addView(game);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+30));
+        linearLayout.addView(patternModule);
 
-        text = (TextView) findViewById(R.id.title);
-        LinearLayout layout= (LinearLayout) findViewById(R.id.info);
+        title = (TextView) findViewById(R.id.title);
+        LinearLayout layout= (LinearLayout) findViewById(R.id.instructions);
 
-        button = (Button) findViewById(R.id.saveButton);
-        button.setOnClickListener(new View.OnClickListener() {
+        saveButton = (Button) findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Pop-up to name the pattern
-               AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Name your pattern");
-                final EditText input = new EditText(context);
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-                builder.setPositiveButton("OK" , new DialogInterface.OnClickListener(){
+                AlertDialog.Builder nameOfSavedPattern = new AlertDialog.Builder(context);
+                nameOfSavedPattern.setTitle("Name your pattern: ");
+                final EditText nameOfPattern = new EditText(context);
+                nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
+                nameOfSavedPattern.setView(nameOfPattern);
+                nameOfSavedPattern.setPositiveButton("OK" , new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick (DialogInterface dialog, int which){
+
+                        board.isFinished = true;
+                        board.receivePattern(drawBoardView.sendFinishedPattern());
 
                         saveClicked(board);
 
@@ -87,25 +81,23 @@ public class DrawActivity extends Activity {
                         intent.putExtra("patternID" , patternID);
 
                         // Store patternID in stack in Resources
-                        patternID = input.getText().toString();
-                        if (Resources.fifo.size() >= 3){
-                            Resources.fifo.removeFirst();
+                        patternID = nameOfPattern.getText().toString();
+                        if (Resources.fifoSavedRecipes.size() >= 3){
+                            Resources.fifoSavedRecipes.removeFirst();
                         }
-                        Resources.fifo.add(patternID); // adding to the end of the list
+                        Resources.fifoSavedRecipes.add(patternID); // adding to the end of the list
 
-                        board.isFinished = true;
-                        board.receivePattern(view.sendFinishedPattern());
                         startActivity(intent);
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                nameOfSavedPattern.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
 
-                builder.show();
+                nameOfSavedPattern.show();
             }
         });
     }
@@ -113,16 +105,32 @@ public class DrawActivity extends Activity {
     // Saving the pattern as a list in a file named "storePattern"
     private void saveClicked(BoardModel bModel) {
         try{
-            pattern = bModel.getPatternAsList();
-            write(pattern);
+            write(patternList);
         }
         catch (Throwable t) {
-            Toast.makeText(this, "Exception: "+t.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
+            System.out.println("ERROR: " + t);
         }
+        patternList = bModel.getPatternAsList();
     }
 
-    public static void write (int[] pattern) throws IOException{
-        File file = new File("src\\savedPattern.txt");
+
+    public static String makeString(int[] intArray){
+        String str = "";
+        for (int i = 0; i < intArray.length ; i++){
+            str = str + intArray[i];
+        }
+        return str;
+    }
+
+    public void write (int[] pattern) throws IOException{
+        String savedPattern = makeString(board.getPatternAsList());
+        FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
+        fOut.write(savedPattern.getBytes());
+        fOut.close();
+
+        /*
+        File file = new File(Environment.getExternalStorageDirectory() + "/a directory/" + "patternID");
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -133,28 +141,29 @@ public class DrawActivity extends Activity {
             bw.write(pattern[i]);
         }
         bw.close();
+        */
     }
 
     private void addStoredPattern(String storedPattern){
-        if (Resources.storedPatterns[0].equals("")){
-            Resources.storedPatterns[0] = storedPattern;
+        if (Resources.storedPatternsAsStrings[0].equals("")){
+            Resources.storedPatternsAsStrings[0] = storedPattern;
             System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatterns[0]);
+            System.out.print(Resources.storedPatternsAsStrings[0]);
         }
-        else if (Resources.storedPatterns[1].equals("")){
-            Resources.storedPatterns[1] = storedPattern;
+        else if (Resources.storedPatternsAsStrings[1].equals("")){
+            Resources.storedPatternsAsStrings[1] = storedPattern;
             System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatterns[1]);
+            System.out.print(Resources.storedPatternsAsStrings[1]);
 
         }
-        else if (Resources.storedPatterns[2].equals("")){
-            Resources.storedPatterns[2] = storedPattern;
+        else if (Resources.storedPatternsAsStrings[2].equals("")){
+            Resources.storedPatternsAsStrings[2] = storedPattern;
             System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatterns[2]);
+            System.out.print(Resources.storedPatternsAsStrings[2]);
 
         }
         else{ // the first pattern is deleted and replaced
-            Resources.storedPatterns[0] = storedPattern;
+            Resources.storedPatternsAsStrings[0] = storedPattern;
         }
     }
 }

@@ -6,8 +6,10 @@ import com.example.strikkeapp.app.models.OnChangeListener;
 import com.example.strikkeapp.app.models.SquareModel;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.view.Display;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+
 import java.util.ArrayList;
 import sheep.game.State;
 import sheep.math.Vector2;
@@ -18,26 +20,27 @@ import sheep.math.Vector2;
 public class DrawBoardView extends State implements OnChangeListener<BoardModel> {
 
     private DrawActivity activity;
-    private float width;
+    private float screenWidth;
     private BoardModel board;
     public int squareSize;
     private boolean doneInitializing = false;
     private ArrayList<ArrayList<SquareModel>> squares;
+    private final float SCROLL_THRESHOLD = 10;
+    private boolean isOnClick;
 
 
     // CONSTRUCTOR
-    public DrawBoardView(BoardModel board, Display display, DrawActivity activity) {
+    public DrawBoardView(BoardModel board, int screenWidth, DrawActivity activity) {
         this.board = board;
         this.board.addListener(this);
         this.activity = activity;
-        this.width = display.getWidth();
+        this.screenWidth = screenWidth;
 
         initializeSquares();
         doneInitializing = true;
         board.squareSize = squareSize;
     }
 
-    // when a view is made the squares must be placed on the screen.
     public void initializeSquares() {
         calculateSquareSize();
         Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
@@ -55,19 +58,15 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         this.squares = squares;
     }
 
-    // the size of the squares depends on the number of squares in a row and the width of the actual screen
     public void calculateSquareSize(){
         int rows = board.getRows();
-        squareSize = (int) (width / rows); // width of a square
+        squareSize = (int) (screenWidth / rows);
     }
 
-    // whenever a change is made to the View, the BoardModel is notified.
+  //--------------------------------------------------------------------------
+  // CHANGE LISTENER METHODS:
+  //--------------------------------------------------------------------------
     public void onChange(BoardModel board) {
-        updatePattern(board);
-    }
-
-    // when a square state is changed in the BoardModel this must be updated in the SquareModel as well
-    private void updatePattern(BoardModel board){
         for (int i = 0; i < board.getRows(); i++) {
             for (int j = 0; j < board.getCols(); j++) {
                 SquareModel square = squares.get(i).get(j);
@@ -76,14 +75,8 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         }
     }
 
-    // the view is updated continuously
     public void update(float dt){
         super.update(dt);
-        updateSquares(dt);
-    }
-
-    // all the SquareModels on the screen is also updated continuously
-    private void updateSquares(float dt){
         if (!doneInitializing) return;
         for (int i = 0; i < board.getRows(); i++) {
             for (int j = 0; j < board.getCols(); j++) {
@@ -91,16 +84,11 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
             }
         }
     }
+    //--------------------------------------------------------------------------
 
-    // draw the background colour of the canvas, and draw the squares on it
     public void draw (Canvas canvas){
         if (canvas == null) return;
         canvas.drawColor(Color.rgb(151, 177, 174));
-        drawSquares(canvas);
-    }
-
-    // each square is drawn onto the canvas
-    private void drawSquares(Canvas canvas) {
         if (!doneInitializing || canvas == null) return;
         for (int i = 0; i < board.getRows(); i++) {
             for (int j = 0; j < board.getCols(); j++) {
@@ -109,15 +97,31 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         }
     }
 
-    // localise the touch, hence get the square that is touched. This square is then changed.
     public boolean onTouchDown(MotionEvent touch) {
-        int y = (int) touch.getY();
-        int x = (int) touch.getX();
+        int action = touch.getAction();
+        int x = 0;
+        int y = 0;
+        switch(action & MotionEvent.ACTION_MASK) {
+           case MotionEvent.ACTION_DOWN:
+                y = (int) touch.getY();
+                x = (int) touch.getX();
 
-        int col = x / squareSize;
-        int row = y / squareSize;
-        board.drawPattern(row, col);
+                int col = x / squareSize;
+                int row = y / squareSize;
+                board.changeSquareState(row, col);
+                isOnClick = true;
+                break;
+
+           // DOES NOT DETECT MOTION... ONLY TOUCH DOWN
+            case MotionEvent.ACTION_MOVE:
+                if (isOnClick && (Math.abs(x - touch.getX()) > SCROLL_THRESHOLD || Math.abs(y - touch.getY()) > SCROLL_THRESHOLD)) {
+                    System.out.println("movement detected");
+                    isOnClick = false;
+                }
+                break;
+        }
         return true;
+
     }
 
     // return the final states of all the squares on the grid
@@ -127,7 +131,6 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
             ArrayList<SquareModel> row = new ArrayList();
             for (int j = 0; j < squares.get(i).size(); j++){
                 SquareModel state = squares.get(i).get(j);
-               // Log.v("", "" + state.getSquareState());
                 row.add(state);
             }
             pattern.add(row);

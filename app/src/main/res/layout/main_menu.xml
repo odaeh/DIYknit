@@ -15,7 +15,7 @@
         <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="Make new pattern"
+            android:text="Lag nytt mønster"
             android:background="@drawable/button"
             android:layout_gravity="center_horizontal"
             android:id="@+id/newPattern"
@@ -24,7 +24,7 @@
         <Button
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:text="View existing patterns"
+            android:text="Hent lagrede mønstre"
             android:background="@drawable/button"
             android:id="@+id/existing"
             android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:background="@drawable/button"
-            android:text="User guide"
+            android:text="Hjelp"
             android:id="@+id/guide"
             android:layout_gravity="center"/>
 

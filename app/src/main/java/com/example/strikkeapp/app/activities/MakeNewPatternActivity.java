@@ -8,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 
@@ -18,11 +20,7 @@ public class MakeNewPatternActivity extends Activity {
 
     private EditText field1;
     private EditText field2;
-    private EditText field3;
     private Button button;
-    private String circumference;
-    private String stitches;
-    private String rows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,38 +30,45 @@ public class MakeNewPatternActivity extends Activity {
 
         field1 = (EditText) findViewById(R.id.circumference);
         field2 = (EditText) findViewById(R.id.stitch);
-        field3 = (EditText) findViewById(R.id.rows);
         button = (Button) findViewById(R.id.next);
 
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Resources res = new Resources();
+                boolean ready1;
+                boolean ready2;
 
                 if (field1.getText().toString().equals("")){
-                    res.circumference = "0";
+                    //res.circumference = "0";
+                    ready1 = false;
                 }
+
                 else {
                     res.circumference = field1.getText().toString();
+                    ready1 = true;
                 }
 
                 if (field2.getText().toString().equals("")){
-                    res.stitches = "0";
+                    //res.stitches = "0";
+                    ready2 = false;
                 }
                 else {
                     res.stitches = field2.getText().toString();
+                    ready2 = true;
                 }
 
-                if (field3.getText().toString().equals("")){
-                    res.rows = "0";
+                if (ready1 && ready2) {
+                    Intent intent = new Intent(MakeNewPatternActivity.this, DrawActivity.class);
+                    startActivity(intent);
                 }
-                else {
-                    res.rows = field3.getText().toString();
+                else{
+                    giveMessage();
                 }
-
-                Intent intent = new Intent(MakeNewPatternActivity.this, DrawActivity.class);
-                startActivity(intent);
             }
         });
+    }
+    public void giveMessage(){
+        Toast.makeText(this, "Vennligst skriv inn både omkrets og strikkefasthet på garn!", Toast.LENGTH_LONG).show();
     }
 }

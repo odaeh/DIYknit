@@ -14,7 +14,7 @@
         android:textSize="30sp"
         android:textStyle="italic|bold"
         android:textColor="#4B7948"
-        android:text="Create your own pattern:"
+        android:text="Lag ditt eget mønster:"
         android:layout_margin="15dp"
         android:layout_gravity="center"
         />
@@ -24,12 +24,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/customboder"
-        android:id="@+id/drawView"
+        android:id="@+id/drawPatternModule"
         android:layout_below = "@id/title">
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/info"
+        android:id="@+id/instructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -42,7 +42,7 @@
                 android:id="@+id/instructions1"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
-                android:text="1. Draw a pattern (click twice to erase)"
+                android:text="1. Tegn mønster ved å trykke på rutene. Ved å dobbelklikke vil merket rute bli tom igjen."
                 android:layout_marginBottom="7dp"
                 android:layout_marginTop="7dp"
             />
@@ -50,20 +50,20 @@
                 android:id="@+id/instructions2"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
-                android:text="2. Save it"
+                android:text="2. Lagre og navngi mønsteret ditt."
                 android:layout_marginBottom="7dp"
             />
              <TextView
                 android:id="@+id/instructions3"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
-                android:text="3. Receive a personalised knitting recipe"
+                android:text="3. Strikkeoppskrift for bord med mønsteret ditt vil dukke opp!"
             />
         </LinearLayout>
     <Button
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="Lagre"
         android:background="@drawable/button"
         android:layout_gravity="center_vertical"
         android:id="@+id/saveButton"/>

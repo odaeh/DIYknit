@@ -3,6 +3,7 @@ package com.example.strikkeapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.example.strikkeapp.app.models.RecipeModel;
 import com.example.strikkeapp.app.views.RecipeView;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,16 +33,16 @@ import sheep.game.Game;
 
 public class RecipeActivity extends Activity {
 
-    private RecipeModel recipe;
+   // private RecipeModel recipe;
     public int circumference;
     public int stitches;
-    public int rows;
-    private Button button;
+    private Button backToMainMenuButton;
+    private Button backToDrawingButton;
     private BoardModel bModel;
     private TextView recipeText;
-    private String patternID;
     public static String storedPattern;
     public static int[] patternAsList;
+    int numCasts;
 
 
     @Override
@@ -48,51 +50,90 @@ public class RecipeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
-        Game game = new Game(this, null);
+        Game patternModule = new Game(this, null);
 
         Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
+        int screenWidth = display.getWidth();
+        //int screenHeight = display.getHeight();
 
-        readStoredFile();
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
         this.bModel = intent.getParcelableExtra("boardModel");
-        //this.patternID = intent.getStringExtra("patternID");
         this.storedPattern = intent.getStringExtra("storedPattern");
+
+        // Receiving data from Resources
         this.circumference = Integer.parseInt(Resources.circumference);
         this.stitches = Integer.parseInt(Resources.stitches);
-        this.rows = Integer.parseInt(Resources.rows);
 
-        RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, rows, width);
-        RecipeView view = new RecipeView(recipe, this, display);
-        game.pushState(view);
+        RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, screenWidth);
+        RecipeView view = new RecipeView(recipe, this);
+        patternModule.pushState(view);
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, width/2);
-            params.gravity = Gravity.CENTER;
-        linearLayout.setLayoutParams(params);
-        linearLayout.addView(game);
+        float heightOfPatternModule = (bModel.numOfSquaresInBoardHeight*bModel.squareSize)/2;
+        int widthOfOnePatternSequence = bModel.numOfSquaresInBoardWidth*bModel.squareSize;
+        float widthOfPatternModule = ((recipe.columns/bModel.numOfSquaresInBoardWidth)*widthOfOnePatternSequence)/2;
+
+        LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int)widthOfPatternModule, (int)heightOfPatternModule);
+            patternModuleView.gravity = Gravity.CENTER;
+        linearLayout.setLayoutParams(patternModuleView);
+        linearLayout.addView(patternModule);
 
         setRecipeText();
 
-        button = (Button) findViewById(R.id.backButton);
-        button.setOnClickListener(new View.OnClickListener() {
+        backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
+        backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
                 startActivity(intent);
             }
         });
-    } //OnCreate
+
+        backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
+        backToDrawingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Resources.fixNewlyMadePattern = true;
+
+                // HENT OPP FORRIGE MØNSTER SLIK AT MAN KAN ENDRE PÅ DET!
+                Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 
     private void setRecipeText(){
        recipeText = (TextView) findViewById(R.id.recipeText);
-       int numCasts = (circumference * 10); //10 stitches pr cm
-       recipeText.setText("Legg opp " + numCasts + " masker.");
+       float numMasks = (circumference * stitches)/10; // stitches pr 10 cm
+       int numPatterns = (int)numMasks / bModel.numOfSquaresInBoardWidth;
+        if ((numMasks - numPatterns*bModel.numOfSquaresInBoardWidth) >= (bModel.numOfSquaresInBoardWidth / 2)){
+            numCasts = (numPatterns+1)*bModel.numOfSquaresInBoardWidth;
+        }
+        else {
+            numCasts = numPatterns * bModel.numOfSquaresInBoardWidth;
+        }
+        System.out.println("Antall masker i omkretsen: " + numPatterns);
+        System.out.println("Antall masker: " + numCasts);
+       recipeText.setText("Legg opp " + numCasts + " masker, da vil mønsteret ditt opptre " + numPatterns + " ganger.\n"
+               + "Følg så mønster over til du er ferdig med borden. Fortsett så på original oppskrift for genser, lue eller skjerf. " );
     }
 
-    public static void readStoredFile() throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader("src\\savedPattern.txt"));
+    public static int[] readStoredFile() throws IOException {
+        //FileInputStream fin = openFileInput(file);
+        int c;
+        String temp="";
+        //while( (c = fin.read()) != -1){
+          //  temp = temp + Character.toString((char)c);
+       // }
+        //fin.close();
+
+        for(int i = 0; i < temp.length() ; i++){
+            //int[] list =
+        }
+
+
+        /*
+        BufferedReader br = new BufferedReader(new FileReader(Environment.getExternalStorageDirectory() + "/a directory/" + "a file"));
         String line;
         int counter = 0;
         while ((line = br.readLine()) != null) {
@@ -100,6 +141,8 @@ public class RecipeActivity extends Activity {
             counter++;
         }
         br.close();
+        */
+        return patternAsList;
     }
 }
 

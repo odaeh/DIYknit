@@ -34,7 +34,7 @@
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="Back to Main Menu"
+            android:text="Tilbake"
             android:background="@drawable/button"
             android:layout_gravity="center_vertical"
             android:id="@+id/backButton"/>

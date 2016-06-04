@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.strikkeapp.app.Resources;
+import com.example.strikkeapp.app.activities.RecipeActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,66 +15,78 @@ import sheep.math.Vector2;
 /**
  * Created by oda on 03.06.15.
  */
-public class BoardModel extends SimpleObservable<BoardModel> implements OnChangeListener <DrawingModel>, Parcelable{
+public class BoardModel extends SimpleObservable<BoardModel> implements Parcelable{
 
     private GridModel grid;
-    private DrawingModel drawing;
-    private ArrayList<ArrayList<SquareModel>> pattern;
+    private ArrayList<ArrayList<SquareModel>> patternSquares;
+    ArrayList<ArrayList<SquareModel>> croppedPatternSquares;
     public boolean isFinished = false;
     public int squareSize;
     int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
-    int width;
-    int height;
-    public int [] patternValues;
+    public int numOfSquaresInBoardWidth;
+    public int numOfSquaresInBoardHeight;
+    int rows;
+    int cols;
+    public static int [] patternValues;
 
     // CONSTRUCTOR
-    public BoardModel(DrawingModel drawing){
-        this.drawing = drawing;
-        drawing.addListener(this);
-        initGrid(drawing);
+    public BoardModel(int rows, int cols){
+        this.rows = rows;
+        this.cols = cols;
+        initGrid(rows, cols);
     }
 
-    // Constructor sed when receiving data
+    // CONSTRUCTOR USED WHEN RECEIVING DATA
     public BoardModel(Parcel source) {
-        int size = source.readInt();
+        int sizeOfPattern = source.readInt();
         squareSize = source.readInt();
-        width = source.readInt();
+        numOfSquaresInBoardWidth = source.readInt();
 
-        this.patternValues = new int[size * size];
+        this.patternValues = new int[sizeOfPattern * sizeOfPattern];
         source.readIntArray(patternValues);
 
-        pattern = createSquares(size, patternValues);
+        if (Resources.existingButtonPushed == true) {
+            try {
+                patternSquares = buildPatternFromList(sizeOfPattern, RecipeActivity.readStoredFile());
+            } catch (Throwable t) {
+                System.out.println("Exception: " + t.toString());
+            }
+        }
+        else {
+            patternSquares = buildPatternFromList(sizeOfPattern, patternValues);
+        }
     }
 
-    // Using the int [] patternValues to build the pattern
-    public ArrayList<ArrayList<SquareModel>> createSquares(int size, int[] patternValues){
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular square
-        pattern = new ArrayList<ArrayList<SquareModel>>();
+    // BUILDING PATTERN FROM LIST OF VALUES
+    public ArrayList<ArrayList<SquareModel>> buildPatternFromList(int size, int[] patternValues){
+        Vector2 sizeVec = new Vector2(squareSize, squareSize); // x and y direction => rectangular squares
+        patternSquares = new ArrayList<ArrayList<SquareModel>>();
         for (int i = 0; i < size; i++) {
-            pattern.add(new ArrayList<SquareModel>());
+            patternSquares.add(new ArrayList<SquareModel>());
             for (int j = 0; j < size; j++) {
                 Vector2 pos = new Vector2(squareSize * j, squareSize * i);
                 SquareModel square = new SquareModel(pos, sizeVec);
                 square.setSize(squareSize);
-                pattern.get(i).add(square);
+                patternSquares.get(i).add(square);
 
                 if (patternValues[i*size + j] == 1) {
-                    pattern.get(i).get(j).setSquareState(SquareState.FULL);
+                    patternSquares.get(i).get(j).setSquareState(SquareState.FULL);
 
                 } else if (patternValues[i*size + j] == 0) {
-                    pattern.get(i).get(j).setSquareState(SquareState.EMPTY);
+                    patternSquares.get(i).get(j).setSquareState(SquareState.EMPTY);
                 }
             }
         }
-        return pattern;
+        return patternSquares;
     }
 
+    // BOARD MODEL CLASS IS PARCELABLE
     public int describeContents() {
         return ((Parcelable)this).hashCode();
     }
 
-    // change the state of a square and notify the DrawingModel
-    public void drawPattern(int row, int col){
+    // CHANGE THE SQUARE STATE AND NOTIFY THE DRAW MODEL
+    public void changeSquareState(int row, int col){
         if (getSquareState(row, col) == SquareState.EMPTY) {
             setSquareState(row, col, SquareState.FULL);
         }
@@ -82,74 +96,45 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         notifyObservers(this);
     }
 
-    // when a change is made, the draw model is notified
-    public void onChange(DrawingModel model){
-        initGrid(model);
-        if (isFinished){// when the user is satisfied with the pattern this is signalised to the DrawingModel
-            notifyObservers(this);
-        }
-    }
-
-    // when a change is made to the board a new grid is made on the drawing
-    public void initGrid(DrawingModel model){
-        grid = new GridModel(model.getRows(), model.getCols());
-    }
-
-    public int getRows() {
-        return this.drawing.getRows();
-    }
-
-    public int getCols(){
-        return this.drawing.getCols();
-    }
-
-    public SquareState getSquareState (int row, int col){
-        return grid.getSquareState(row, col);
-    }
-
-    public void setSquareState (int row, int col, SquareState state){
-        grid.setSquareState(row, col, state);
-    }
-
     public void receivePattern(ArrayList<ArrayList<SquareModel>> pattern){
-        this.pattern = pattern;
+        this.patternSquares = pattern;
     }
 
-    // Retrieves the actual pattern based on the black squares
-    public ArrayList<ArrayList<SquareModel>> getPattern() {
+    // CROPS PATTERN BASED ON OUTLINE OF BLACK SQUARES
+    public ArrayList<ArrayList<SquareModel>> cropPattern() {
         getSizeOfPattern();
-        ArrayList<ArrayList<SquareModel>> newSquares = new ArrayList<ArrayList<SquareModel>>();
-
-        for (int i = 0; i < pattern.size(); i++) {
+        croppedPatternSquares = new ArrayList<ArrayList<SquareModel>>();
+        for (int i = 0; i < patternSquares.size(); i++) {
             ArrayList<SquareModel> newSquareRow = new ArrayList<SquareModel>();
-            //System.out.println(pattern.size()+ " " + pattern.get(i).size());
-            for (int j = 0; j < pattern.get(i).size(); j++) {
-                if (getXpos(pattern, i, j) >= actualPatternDim[0] && pattern.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && pattern.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && pattern.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
-                    newSquareRow.add(pattern.get(i).get(j));
+            for (int j = 0; j < patternSquares.get(i).size(); j++) {
+                if (getXposOfSquare(patternSquares, i, j) >= actualPatternDim[0] && patternSquares.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && patternSquares.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && patternSquares.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
+                    newSquareRow.add(patternSquares.get(i).get(j));
                 }
             }
             if(newSquareRow.size() > 0) {
-                newSquares.add(newSquareRow);
+                croppedPatternSquares.add(newSquareRow);
             }
         }
-        return newSquares;
+        return croppedPatternSquares;
     }
 
-    public float getXpos(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
+    // GET THE HORIZONTAL POSITION OF A SQUARE
+    public float getXposOfSquare(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
         return pattern.get(i).get(j).getPosition().getX();
     }
+
 
     public void getSizeOfPattern() {
         ArrayList<Integer> horizontal = new ArrayList<Integer>();
         ArrayList<Integer> vertical = new ArrayList<Integer>();
 
-        for (int i = 0; i < pattern.size(); i++) {
-            for (int j = 0; j < pattern.size(); j++) {
-                SquareState state = pattern.get(i).get(j).getSquareState();
+        for (int i = 0; i < patternSquares.size(); i++) {
+            for (int j = 0; j < patternSquares.size(); j++) {
+                SquareState state = patternSquares.get(i).get(j).getSquareState();
 
                 if (state == SquareState.FULL) {
-                    horizontal.add((int) pattern.get(i).get(j).getPosition().getX());
-                    vertical.add((int) pattern.get(i).get(j).getPosition().getY());
+                    horizontal.add((int) patternSquares.get(i).get(j).getPosition().getX());
+                    vertical.add((int) patternSquares.get(i).get(j).getPosition().getY());
                 }
             }
         }
@@ -160,25 +145,25 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
         actualPatternDim[2] = vertical.get(0); // Top
         actualPatternDim[3] = vertical.get(vertical.size() - 1); // Bottom
 
-        width = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
-        height = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
+        numOfSquaresInBoardWidth = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
+        numOfSquaresInBoardHeight = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
     }
 
 
-    // Used when sending data
-    public void writeToParcel(Parcel dest, int flags){
-        dest.writeInt(pattern.size());
-        dest.writeInt(squareSize);
-        dest.writeInt(width);
-        dest.writeIntArray(getPatternAsList());
+    // USED WHEN SENDING DATA
+    public void writeToParcel(Parcel destination, int flags){
+        destination.writeInt(patternSquares.size());
+        destination.writeInt(squareSize);
+        destination.writeInt(numOfSquaresInBoardHeight);
+        destination.writeIntArray(getPatternAsList());
     }
 
-    public int[] getPatternAsList(){
-        int[] patternValues = new int[pattern.size()*pattern.size()];
-        for (int i = 0; i < pattern.size(); i++) {
-            for (int j = 0; j < pattern.get(i).size(); j++) {
-                patternValues[i*pattern.size()+j] = pattern.get(i).get(j).getSquareState().value;
-                //System.out.println(Arrays.toString(patternValues));
+    // CONVERT PATTERN AS A LIST OF SQUARES TO A LIST OF INTEGERS
+    public int[] getPatternAsList() {
+        int[] patternValues = new int[patternSquares.size() * patternSquares.size()];
+        for (int i = 0; i < patternSquares.size(); i++) {
+            for (int j = 0; j < patternSquares.get(i).size(); j++) {
+                patternValues[i * patternSquares.size() + j] = patternSquares.get(i).get(j).getSquareState().value;
             }
         }
         return patternValues;
@@ -192,4 +177,30 @@ public class BoardModel extends SimpleObservable<BoardModel> implements OnChange
             return new BoardModel[size];
         }
     };
+
+    // MAKES A GRID OF SIZE ROWS*COLS
+    public void initGrid(int rows, int columns){
+        grid = new GridModel(rows, columns);
+    }
+
+    // GETERS AND SETERS
+    //------------------------------------------------------------
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols(){
+        return cols;
+    }
+
+    public SquareState getSquareState (int row, int col){
+        return grid.getSquareState(row, col);
+    }
+
+    public void setSquareState (int row, int col, SquareState state){
+        grid.setSquareState(row, col, state);
+    }
+    //------------------------------------------------------------
+
+
 }

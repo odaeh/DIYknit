@@ -1,8 +1,6 @@
 package com.example.strikkeapp.app.models;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
 import sheep.math.Vector2;
 
 /**
@@ -15,28 +13,25 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int screenWidth;
     int circumference;
     int stitches;
-    int rows;
     int numCasts;
     public BoardModel bModel;
-    int columns = 30;
+    public int columns = 40;
 
     // CONSTRUCTOR
-    public RecipeModel(BoardModel bModel, int circumference, int stitches, int rows, int screenWidth) {
+    public RecipeModel(BoardModel bModel, int circumference, int stitches, int screenWidth) {
         this.circumference = circumference;
-        this.rows = rows;
         this.stitches = stitches;
         this.screenWidth = screenWidth;
         this.bModel = bModel;
-        //this.patternID = patternID;
 
-        createSquares(bModel.getPattern().size(), columns-calculateCropLength());
-        generateBorder(bModel.getPattern());
+        createSquares(bModel.cropPattern().size(), columns-calculateCropLength());
+        generateBorder(bModel.cropPattern());
 
         calculateCasts();
     }
 
     public int calculateCropLength(){
-        return columns - ((getNumMultiplePatterns(bModel.getPattern())*bModel.getPattern().get(0).size()));
+        return columns - ((getNumMultiplePatterns(bModel.cropPattern())*bModel.cropPattern().get(0).size()));
     }
 
     // Add squares to the board

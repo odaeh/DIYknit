@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class GridModel{
 
-    private ArrayList<ArrayList<SquareState>> grid;
+    public ArrayList<ArrayList<SquareState>> grid;
     final int rows;
     final int cols;
 

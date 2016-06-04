@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
-            android:text="Circumference (cm): "
+            android:text="Omkrets på bord (cm): "
             android:textStyle="bold"/>
 
         <EditText
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:text="Gauge 10x10 cm (sts, rows): "
+                android:text="Strikkefasthet (antall masker pr. 10 cm): "
                 android:textStyle="bold"/>
 
             <EditText
@@ -57,16 +57,6 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:id="@+id/stitch"
-                android:inputType="text"
-                android:layout_margin="10dp"
-                android:textColor="@android:color/black"
-                android:background="@android:color/white"
-                />
-            <EditText
-                android:layout_width="250dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:id="@+id/rows"
                 android:inputType="text"
                 android:layout_margin="10dp"
                 android:textColor="@android:color/black"

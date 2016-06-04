@@ -39,11 +39,11 @@ public class ExistingPatternActivity extends Activity {
         button3 = (Button) findViewById(R.id.choosePattern3);
 
         // Top button
-        if (Resources.fifo.isEmpty()){
+        if (Resources.fifoSavedRecipes.isEmpty()){
             button3.setText("");
         }
         else{
-            patternID = Resources.fifo.get(0).toString();
+            patternID = Resources.fifoSavedRecipes.get(0).toString();
             button3.setText(patternID);
         }
         button3.setOnClickListener(new View.OnClickListener() {
@@ -56,11 +56,11 @@ public class ExistingPatternActivity extends Activity {
         });
 
         // Middle button
-        if (Resources.fifo.size() < 2){
+        if (Resources.fifoSavedRecipes.size() < 2){
             button2.setText("");
         }
         else{
-            patternID = Resources.fifo.get(1).toString();
+            patternID = Resources.fifoSavedRecipes.get(1).toString();
             button2.setText(patternID);
         }
         button2.setOnClickListener(new View.OnClickListener() {
@@ -73,11 +73,11 @@ public class ExistingPatternActivity extends Activity {
         });
 
         // Bottom button
-        if (Resources.fifo.size() < 3){
+        if (Resources.fifoSavedRecipes.size() < 3){
             button1.setText("");
         }
         else{
-            patternID = Resources.fifo.get(2).toString();
+            patternID = Resources.fifoSavedRecipes.get(2).toString();
             button1.setText(patternID);
         }
         button1.setOnClickListener(new View.OnClickListener() {
