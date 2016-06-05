@@ -46,7 +46,7 @@ public class RecipeActivity extends Activity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
@@ -66,40 +66,39 @@ public class RecipeActivity extends Activity {
         this.circumference = Integer.parseInt(Resources.circumference);
         this.stitches = Integer.parseInt(Resources.stitches);
 
-        RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, screenWidth);
-        RecipeView view = new RecipeView(recipe, this);
-        patternModule.pushState(view);
+            RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, screenWidth);
+            RecipeView view = new RecipeView(recipe, this);
+            patternModule.pushState(view);
 
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-        float heightOfPatternModule = (bModel.numOfSquaresInBoardHeight*bModel.squareSize)/2;
-        int widthOfOnePatternSequence = bModel.numOfSquaresInBoardWidth*bModel.squareSize;
-        float widthOfPatternModule = ((recipe.columns/bModel.numOfSquaresInBoardWidth)*widthOfOnePatternSequence)/2;
+            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
+            float heightOfPatternModule = (bModel.numOfSquaresInBoardHeight * bModel.squareSize) / 2;
+            int widthOfOnePatternSequence = bModel.numOfSquaresInBoardWidth * bModel.squareSize;
+            float widthOfPatternModule = ((recipe.columns / bModel.numOfSquaresInBoardWidth) * widthOfOnePatternSequence) / 2;
 
-        LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int)widthOfPatternModule, (int)heightOfPatternModule);
+            LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
             patternModuleView.gravity = Gravity.CENTER;
-        linearLayout.setLayoutParams(patternModuleView);
-        linearLayout.addView(patternModule);
+            linearLayout.setLayoutParams(patternModuleView);
+            linearLayout.addView(patternModule);
 
-        setRecipeText();
+            setRecipeText();
 
-        backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
-        backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
-                startActivity(intent);
-            }
-        });
+            backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
+            backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
+                    startActivity(intent);
+                }
+            });
 
-        backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
-        backToDrawingButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Resources.fixNewlyMadePattern = true;
-
-                // HENT OPP FORRIGE MØNSTER SLIK AT MAN KAN ENDRE PÅ DET!
-                Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
-                startActivity(intent);
-            }
-        });
+            backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
+            backToDrawingButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Resources.fixNewlyMadePattern = true;
+                    // TODO: Retrieve the latest pattern when the "back" button is pushed so that changes can be made to the newly made pattern.
+                    Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
+                    startActivity(intent);
+                }
+            });
     }
 
     private void setRecipeText(){

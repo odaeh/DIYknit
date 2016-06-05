@@ -22,15 +22,17 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
     ArrayList<ArrayList<SquareModel>> croppedPatternSquares;
     public boolean isFinished = false;
     public int squareSize;
-    int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
+    private int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
     public int numOfSquaresInBoardWidth;
     public int numOfSquaresInBoardHeight;
     int rows;
     int cols;
     public static int [] patternValues;
+    public boolean noneTouchedSquaresOnScreen;
 
     // CONSTRUCTOR
     public BoardModel(int rows, int cols){
+        noneTouchedSquaresOnScreen = false;
         this.rows = rows;
         this.cols = cols;
         initGrid(rows, cols);
@@ -125,28 +127,33 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
 
 
     public void getSizeOfPattern() {
-        ArrayList<Integer> horizontal = new ArrayList<Integer>();
-        ArrayList<Integer> vertical = new ArrayList<Integer>();
+        if (patternSquares.size() == 0) {
+            noneTouchedSquaresOnScreen = true;
+        } else {
+            noneTouchedSquaresOnScreen = false;
+            ArrayList<Integer> horizontal = new ArrayList<Integer>();
+            ArrayList<Integer> vertical = new ArrayList<Integer>();
 
-        for (int i = 0; i < patternSquares.size(); i++) {
-            for (int j = 0; j < patternSquares.size(); j++) {
-                SquareState state = patternSquares.get(i).get(j).getSquareState();
+            for (int i = 0; i < patternSquares.size(); i++) {
+                for (int j = 0; j < patternSquares.size(); j++) {
+                    SquareState state = patternSquares.get(i).get(j).getSquareState();
 
-                if (state == SquareState.FULL) {
-                    horizontal.add((int) patternSquares.get(i).get(j).getPosition().getX());
-                    vertical.add((int) patternSquares.get(i).get(j).getPosition().getY());
+                    if (state == SquareState.FULL) {
+                        horizontal.add((int) patternSquares.get(i).get(j).getPosition().getX());
+                        vertical.add((int) patternSquares.get(i).get(j).getPosition().getY());
+                    }
                 }
             }
-        }
-        Collections.sort(horizontal);
-        actualPatternDim[0] = horizontal.get(0); // Left
-        actualPatternDim[1] = horizontal.get(horizontal.size() - 1); // Right
-        Collections.sort(vertical);
-        actualPatternDim[2] = vertical.get(0); // Top
-        actualPatternDim[3] = vertical.get(vertical.size() - 1); // Bottom
+            Collections.sort(horizontal);
+            actualPatternDim[0] = horizontal.get(0); // Left
+            actualPatternDim[1] = horizontal.get(horizontal.size() - 1); // Right
+            Collections.sort(vertical);
+            actualPatternDim[2] = vertical.get(0); // Top
+            actualPatternDim[3] = vertical.get(vertical.size() - 1); // Bottom
 
-        numOfSquaresInBoardWidth = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
-        numOfSquaresInBoardHeight = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
+            numOfSquaresInBoardWidth = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
+            numOfSquaresInBoardHeight = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
+        }
     }
 
 

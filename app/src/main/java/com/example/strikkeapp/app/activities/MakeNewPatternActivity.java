@@ -59,6 +59,7 @@ public class MakeNewPatternActivity extends Activity {
                 }
 
                 if (ready1 && ready2) {
+                    // TODO: stitches cannot be larger than circumferrence! Show a message if this happens.
                     Intent intent = new Intent(MakeNewPatternActivity.this, DrawActivity.class);
                     startActivity(intent);
                 }

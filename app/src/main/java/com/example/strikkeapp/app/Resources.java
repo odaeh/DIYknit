@@ -14,7 +14,7 @@ public class Resources {
     public static  LinkedList<String> fifoSavedRecipes = new LinkedList<String>();
     public static  Boolean existingButtonPushed = false;
     public static  Boolean fixNewlyMadePattern = false;
-    public static  String[] storedPatternsAsStrings = new String[3];
+    public static  String[] storedPatternsAsStrings = new String[5];
     public static  String existingID;
 
 }

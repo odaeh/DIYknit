@@ -15,7 +15,7 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     int stitches;
     int numCasts;
     public BoardModel bModel;
-    public int columns = 40;
+    public int columns = 30;
 
     // CONSTRUCTOR
     public RecipeModel(BoardModel bModel, int circumference, int stitches, int screenWidth) {

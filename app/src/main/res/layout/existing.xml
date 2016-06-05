@@ -13,6 +13,11 @@
         android:id="@+id/existingView"
         android:layout_gravity="center_vertical"
         android:background="@drawable/knitted">
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/list">
+        </ListView>
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"

@@ -4,6 +4,8 @@ import com.example.strikkeapp.app.activities.DrawActivity;
 import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.OnChangeListener;
 import com.example.strikkeapp.app.models.SquareModel;
+import com.example.strikkeapp.app.models.SquareState;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
@@ -27,7 +29,6 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     private ArrayList<ArrayList<SquareModel>> squares;
     private final float SCROLL_THRESHOLD = 10;
     private boolean isOnClick;
-
 
     // CONSTRUCTOR
     public DrawBoardView(BoardModel board, int screenWidth, DrawActivity activity) {
