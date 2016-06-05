@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\oda\Android studioProjects\StrikkeApp\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="21.0.0"
+        sha1="90b524b5234ed7d6099cee5deea61cd1392d215f">
+        <dex dex="C:\Users\oda\Android studioProjects\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_c9585c94656f4321afbf7b1e383424f11dde5f13\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\oda\Android studioProjects\StrikkeApp\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="21.0.0"
+        sha1="8f3e8e587144d5e4d3805bb37fac22d2dcb0c18b">
+        <dex dex="C:\Users\oda\Android studioProjects\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_39d1eab7fea14f66e93f2baacd5014806d4caaa6\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\oda\Android studioProjects\StrikkeApp\app\libs\sheep.jar"
+        jumboMode="true"
+        revision="21.0.0"
+        sha1="6f2a3065cccc5b4acc1b118be7d80231485a1f90">
+        <dex dex="C:\Users\oda\Android studioProjects\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\2\sheep_8dd603a1779eb881691d01adab47e9cc7b3d652e\classes.dex" />
+    </item>
+
+</items>
