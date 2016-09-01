@@ -42,12 +42,48 @@ public class DrawActivity extends Activity {
     int rows = Resources.rows;
     int cols = Resources.cols;
     public CustomAdapter adapter;
+    int screenWidth;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
+        createHelpDialog(instructionsHelp);
+
+        Game patternModule = new Game(this, null); // From external library.
+
+        getDisplayMetrics();
+
+        board = new BoardModel(rows, cols);
+        final DrawBoardView drawBoardView = new DrawBoardView(board, this);
+
+        patternModule.pushState(drawBoardView);
+        setContentView(R.layout.draw_pattern_screen);
+
+        createLayoutElements(patternModule);
+        createHelpButton();
+        createSaveButton(drawBoardView);
+    }
+
+    private void createLayoutElements(Game patternModule) {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
+        linearLayout.addView(patternModule);
+
+        title = (TextView) findViewById(R.id.title);
+    }
+
+    private void getDisplayMetrics() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        Resources.screenWidth = screenWidth;
+        Resources.screenHeight = displayMetrics.heightPixels;
+    }
+
+    private void createHelpDialog(AlertDialog.Builder instructionsHelp) {
         instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
         instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n Lagre mønsteret når du er ferdig for å få oppskriften.");
         instructionsHelp.setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
@@ -58,29 +94,6 @@ public class DrawActivity extends Activity {
         });
 
         instructionsHelp.show();
-
-        Game patternModule = new Game(this, null); // From external library.
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-        Resources.screenWidth = screenWidth;
-        Resources.screenHeight = displayMetrics.heightPixels;
-
-        board = new BoardModel(rows, cols);
-        final DrawBoardView drawBoardView = new DrawBoardView(board, this);
-
-        patternModule.pushState(drawBoardView);
-        setContentView(R.layout.draw_pattern_screen);
-
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
-        linearLayout.addView(patternModule);
-
-        title = (TextView) findViewById(R.id.title);
-
-        createHelpButton();
-        createSaveButton(drawBoardView);
     }
 
     // Saving the pattern as a list in a file named "storePattern"
@@ -115,7 +128,6 @@ public class DrawActivity extends Activity {
         FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
         fOut.write(savedPattern.getBytes());
         fOut.close();
-
 
         File file = new File(Environment.getExternalStorageDirectory() + "/a directory/" + "patternID");
         if (!file.exists()) {
@@ -159,16 +171,7 @@ public class DrawActivity extends Activity {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
-                instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
-                instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n Lagre mønsteret når du er ferdig for å få oppskriften.");
-                instructionsHelp.setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                instructionsHelp.show();
+                createHelpDialog(instructionsHelp);
             }
         });
     }
@@ -178,16 +181,13 @@ public class DrawActivity extends Activity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
                 if (board.noTouchedSquaresOnScreen) { // no left square i.e no tiles have been touched adn pattern is empty
                     showMessage();
                     // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
                 } else {
-                */
-                AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
-                createDialog(nameSavedPattern, drawBoardView);
-
-
+                    AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
+                    createDialog(nameSavedPattern, drawBoardView);
+                }
             }
         });
     }
@@ -210,7 +210,6 @@ public class DrawActivity extends Activity {
                 saveClicked(board);
 
                 // Send the pattern to generate a recipe
-
                 Intent intent = new Intent(DrawActivity.this, RecipeActivity.class);
                 intent.putExtra("boardModel", board);
                 intent.putExtra("patternID", patternID);

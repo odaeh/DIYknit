@@ -38,12 +38,9 @@ public class RecipeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe);
 
-        Game patternModule = new Game(this, null);
+        Game patternModule = new Game(this, null); // External library.
 
-        Display display = getWindowManager().getDefaultDisplay();
-        int screenWidth = display.getWidth();
-        //int screenHeight = display.getHeight();
-
+        int screenWidth = Resources.screenWidth;
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
@@ -58,38 +55,64 @@ public class RecipeActivity extends Activity {
             RecipeView view = new RecipeView(recipe, this);
             patternModule.pushState(view);
 
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-            float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * bModel.tileSize) / 2;
-            int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * bModel.tileSize;
-            float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
+        createPatternLayout(patternModule, recipe);
+        //createLayoutElements();
+        backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
+        backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+            }
+        });
 
-            LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
-            patternModuleView.gravity = Gravity.CENTER;
-            linearLayout.setLayoutParams(patternModuleView);
-            linearLayout.addView(patternModule);
+        backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
+        backToDrawingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Resources.fixNewlyMadePattern = true;
+                // TODO: Retrieve the latest pattern when the "back" button is pushed so that changes can be made to the newly made pattern.
+                Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
+                startActivity(intent);
+            }
+        });
+        title = (TextView) findViewById(R.id.title);
+        title.setText(Resources.recipeName);
 
-            setRecipeText();
+        setRecipeText();
+    }
 
-            backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
-            backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
-                }
-            });
+    private void createLayoutElements() {
+        backToMainMenuButton = (Button) findViewById(R.id.backToMainMenuButton);
+        backToMainMenuButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(RecipeActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+            }
+        });
 
-            backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
-            backToDrawingButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Resources.fixNewlyMadePattern = true;
-                    // TODO: Retrieve the latest pattern when the "back" button is pushed so that changes can be made to the newly made pattern.
-                    Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
-                    startActivity(intent);
-                }
-            });
+        backToDrawingButton = (Button) findViewById(R.id.backToDrawingButton);
+        backToDrawingButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Resources.fixNewlyMadePattern = true;
+                // TODO: Retrieve the latest pattern when the "back" button is pushed so that changes can be made to the newly made pattern.
+                Intent intent = new Intent(RecipeActivity.this, DrawActivity.class);
+                startActivity(intent);
+            }
+        });
+        title = (TextView) findViewById(R.id.title);
+        title.setText(Resources.recipeName);
 
-            title = (TextView) findViewById(R.id.title);
-            title.setText(Resources.recipeName);
+    }
+
+    private void createPatternLayout(Game patternModule, RecipeModel recipe) {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
+        float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * bModel.tileSize) / 2;
+        int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * bModel.tileSize;
+        float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
+
+        LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
+        patternModuleView.gravity = Gravity.CENTER;
+        linearLayout.setLayoutParams(patternModuleView);
+        linearLayout.addView(patternModule);
     }
 
     private void setRecipeText(){
