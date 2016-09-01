@@ -17,7 +17,7 @@ public class Resources {
     public static  String[] storedPatternsAsStrings = new String[5];
     public static int rows = 15;
     public static int cols = 15;
-    public static String recipeName;
+    public static String recipeName ="Hello";
     public static int screenWidth;
     public static int screenHeight;
 

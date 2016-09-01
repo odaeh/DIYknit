@@ -11,12 +11,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:textSize="25sp"
         android:textStyle="italic|bold"
         android:textColor="#4B7948"
-        android:id="@+id/title"
+        android:id="@+id/pageTitle"
         android:gravity="center"
         android:layout_gravity="center_horizontal" />
 

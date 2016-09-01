@@ -8,12 +8,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
 import android.util.DisplayMetrics;
-
-import com.example.strikkeapp.app.R;
-import com.example.strikkeapp.app.Resources;
-import com.example.strikkeapp.app.models.BoardModel;
-import com.example.strikkeapp.app.models.CustomAdapter;
-import com.example.strikkeapp.app.views.DrawBoardView;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
@@ -21,13 +15,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import com.example.strikkeapp.app.R;
+import com.example.strikkeapp.app.Resources;
+import com.example.strikkeapp.app.models.BoardModel;
+import com.example.strikkeapp.app.models.CustomAdapter;
+import com.example.strikkeapp.app.views.DrawBoardView;
 import sheep.game.Game;
 
 public class DrawActivity extends Activity {
