@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 
@@ -20,7 +21,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import sheep.game.Game;
@@ -34,7 +39,7 @@ public class DrawActivity extends Activity {
     private String patternID = "";
     final Context context = this;
     public int[] patternAsList;
-    int rows = Resources.rows; //if these are changed, the number of columns in RecipeModel must be changed as well!
+    int rows = Resources.rows;
     int cols = Resources.cols;
     public CustomAdapter adapter;
 
@@ -54,7 +59,7 @@ public class DrawActivity extends Activity {
 
         instructionsHelp.show();
 
-        Game patternModule = new Game(this, null);
+        Game patternModule = new Game(this, null); // From external library.
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -74,82 +79,13 @@ public class DrawActivity extends Activity {
 
         title = (TextView) findViewById(R.id.title);
 
-        helpButton = (Button)  findViewById(R.id.helpButton);
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
-                instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
-                instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n Lagre mønsteret når du er ferdig for å få oppskriften.");
-                instructionsHelp.setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                instructionsHelp.show();
-            }
-        });
-
-
-        saveButton = (Button) findViewById(R.id.saveButton);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                if (board.noTouchedSquaresOnScreen) { // no left square i.e no tiles have been touched adn pattern is empty
-                    showMessage();
-                    // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
-                } else {
-                */
-                    AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
-                    nameSavedPattern.setTitle("Name your pattern: ");
-                    final EditText nameOfPattern = new EditText(context);
-                    nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
-                    nameSavedPattern.setView(nameOfPattern);
-                    nameSavedPattern.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                    Resources.recipeName = nameOfPattern.getText().toString();
-                            System.out.println("NAVN: "+Resources.recipeName);
-                            board.isFinishedDrawing = true;
-                            board.receiveAllTilesOnBoard(drawBoardView.sendFinishedPattern());
-
-                            saveClicked(board);
-
-                            // Send the pattern to generate a recipe
-
-                            Intent intent = new Intent(DrawActivity.this, RecipeActivity.class);
-                            intent.putExtra("boardModel", board);
-                            intent.putExtra("patternID", patternID);
-
-                            // Store patternID in stack in Resources
-                            patternID = nameOfPattern.getText().toString();
-                            if (Resources.fifoSavedRecipes.size() >= 3) {
-                                Resources.fifoSavedRecipes.removeFirst();
-                            }
-                            Resources.fifoSavedRecipes.add(patternID); // adding to the end of the list
-
-                            startActivity(intent);
-                        }
-                    });
-                    nameSavedPattern.setNegativeButton("Avbryt", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    nameSavedPattern.show();
-                }
-           // }
-        });
+        createHelpButton();
+        createSaveButton(drawBoardView);
     }
 
     // Saving the pattern as a list in a file named "storePattern"
     private void saveClicked(BoardModel bModel) {
+        patternAsList = bModel.getPatternAsIntArray();
         try{
             write(patternAsList);
         }
@@ -157,7 +93,7 @@ public class DrawActivity extends Activity {
             Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
             System.out.println("ERROR: " + t);
         }
-        patternAsList = bModel.getPatternAsIntArray();
+
     }
 
     public void showMessage(){
@@ -180,7 +116,7 @@ public class DrawActivity extends Activity {
         fOut.write(savedPattern.getBytes());
         fOut.close();
 
-        /*
+
         File file = new File(Environment.getExternalStorageDirectory() + "/a directory/" + "patternID");
         if (!file.exists()) {
             file.createNewFile();
@@ -192,7 +128,7 @@ public class DrawActivity extends Activity {
             bw.write(pattern[i]);
         }
         bw.close();
-        */
+
     }
 
     private void addStoredPattern(String storedPattern){
@@ -216,5 +152,86 @@ public class DrawActivity extends Activity {
         else{ // the first pattern is deleted and replaced
             Resources.storedPatternsAsStrings[0] = storedPattern;
         }
+    }
+    public void createHelpButton(){
+        helpButton = (Button)  findViewById(R.id.helpButton);
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
+                instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
+                instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n Lagre mønsteret når du er ferdig for å få oppskriften.");
+                instructionsHelp.setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                instructionsHelp.show();
+            }
+        });
+    }
+
+    public void createSaveButton(final DrawBoardView drawBoardView){
+        saveButton = (Button) findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                if (board.noTouchedSquaresOnScreen) { // no left square i.e no tiles have been touched adn pattern is empty
+                    showMessage();
+                    // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
+                } else {
+                */
+                AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
+                createDialog(nameSavedPattern, drawBoardView);
+
+
+            }
+        });
+    }
+
+    public void createDialog(AlertDialog.Builder nameSavedPattern, final DrawBoardView drawBoardView){
+        nameSavedPattern.setTitle("Name your pattern: ");
+        final EditText nameOfPattern = new EditText(context);
+        nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
+        nameSavedPattern.setView(nameOfPattern);
+        Resources.recipeName = nameOfPattern.getText().toString();
+        nameSavedPattern.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+
+                System.out.println("NAVN: " + Resources.recipeName);
+                board.isFinishedDrawing = true;
+                board.receiveAllTilesOnBoard(drawBoardView.sendFinishedPattern());
+
+                saveClicked(board);
+
+                // Send the pattern to generate a recipe
+
+                Intent intent = new Intent(DrawActivity.this, RecipeActivity.class);
+                intent.putExtra("boardModel", board);
+                intent.putExtra("patternID", patternID);
+
+                // Store patternID in stack in Resources
+                patternID = nameOfPattern.getText().toString();
+                if (Resources.fifoSavedRecipes.size() >= 3) {
+                    Resources.fifoSavedRecipes.removeFirst();
+                }
+                Resources.fifoSavedRecipes.add(patternID); // adding to the end of the list
+
+                startActivity(intent);
+            }
+        });
+        nameSavedPattern.setNegativeButton("Avbryt", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        nameSavedPattern.show();
     }
 }
