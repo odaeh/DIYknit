@@ -15,6 +15,11 @@ public class Resources {
     public static  Boolean existingButtonPushed = false;
     public static  Boolean fixNewlyMadePattern = false;
     public static  String[] storedPatternsAsStrings = new String[5];
-    public static  String existingID;
+    public static int rows = 15;
+    public static int cols = 15;
+    public static String recipeName;
+    public static int screenWidth;
+    public static int screenHeight;
+
 
 }

@@ -2,7 +2,7 @@ package com.example.strikkeapp.app.views;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.view.Display;
+
 import com.example.strikkeapp.app.activities.RecipeActivity;
 import com.example.strikkeapp.app.models.RecipeModel;
 import sheep.game.State;
@@ -21,13 +21,13 @@ public class RecipeView extends State {
         this.activity = activity;
     }
 
-    // Draw the squares on the canvas
+    // Draw the tiles on the canvas
     public void draw (Canvas canvas){
         if (canvas == null) return;
         canvas.drawColor(Color.rgb(151, 177, 174));
-        for (int i = 0; i < recipe.squares.size(); i++) {
-            for (int j = 0; j < recipe.squares.get(i).size(); j++) {
-                recipe.squares.get(i).get(j).draw(canvas);
+        for (int i = 0; i < recipe.tiles.size(); i++) {
+            for (int j = 0; j < recipe.tiles.get(i).size(); j++) {
+                recipe.tiles.get(i).get(j).draw(canvas);
             }
         }
     }
@@ -39,9 +39,9 @@ public class RecipeView extends State {
 
     // all the SquareModels on the screen is also updated continuously
     private void updateSquares(float dt){
-        for (int i = 0; i < recipe.squares.size(); i++) {
-            for (int j = 0; j < recipe.squares.get(i).size() ; j++) {
-                recipe.squares.get(i).get(j).update(dt);
+        for (int i = 0; i < recipe.tiles.size(); i++) {
+            for (int j = 0; j < recipe.tiles.get(i).size() ; j++) {
+                recipe.tiles.get(i).get(j).update(dt);
             }
         }
     }

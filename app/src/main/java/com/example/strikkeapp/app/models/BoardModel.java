@@ -2,13 +2,9 @@ package com.example.strikkeapp.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.activities.RecipeActivity;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import sheep.math.Vector2;
 
@@ -18,68 +14,68 @@ import sheep.math.Vector2;
 public class BoardModel extends SimpleObservable<BoardModel> implements Parcelable{
 
     private GridModel grid;
-    private ArrayList<ArrayList<SquareModel>> patternSquares;
-    ArrayList<ArrayList<SquareModel>> croppedPatternSquares;
-    public boolean isFinished = false;
-    public int squareSize;
-    private int[] actualPatternDim = new int[4]; // Left, Right, Top, Bottom
-    public int numOfSquaresInBoardWidth;
-    public int numOfSquaresInBoardHeight;
-    int rows;
-    int cols;
-    public static int [] patternValues;
-    public boolean noneTouchedSquaresOnScreen;
+    private ArrayList<ArrayList<TileModel>> allTiles;
+    public ArrayList<ArrayList<TileModel>> tilesInPattern;
+    public boolean isFinishedDrawing = false;
+    public int tileSize;
+    private int[] retrieveDrawnPatternDim = new int[4]; // Left, Right, Top, Bottom
+    public int numOfTilesInBoardWidth;
+    public int numOfTilesInBoardHeight;
+    int rowsOnBoard;
+    int colsOnBoard;
+    public static int [] patternAsIntArray;
+    public boolean noTouchedSquaresOnScreen;
 
     // CONSTRUCTOR
-    public BoardModel(int rows, int cols){
-        noneTouchedSquaresOnScreen = false;
-        this.rows = rows;
-        this.cols = cols;
-        initGrid(rows, cols);
+    public BoardModel(int rowsOnBoard, int colsOnBoard){
+        noTouchedSquaresOnScreen = false;
+        this.rowsOnBoard = rowsOnBoard;
+        this.colsOnBoard = colsOnBoard;
+        initGrid(rowsOnBoard, colsOnBoard);
     }
 
     // CONSTRUCTOR USED WHEN RECEIVING DATA
     public BoardModel(Parcel source) {
         int sizeOfPattern = source.readInt();
-        squareSize = source.readInt();
-        numOfSquaresInBoardWidth = source.readInt();
+        tileSize = source.readInt();
+        numOfTilesInBoardWidth = source.readInt();
 
-        this.patternValues = new int[sizeOfPattern * sizeOfPattern];
-        source.readIntArray(patternValues);
+        this.patternAsIntArray = new int[sizeOfPattern * sizeOfPattern];
+        source.readIntArray(patternAsIntArray);
 
         if (Resources.existingButtonPushed == true) {
             try {
-                patternSquares = buildPatternFromList(sizeOfPattern, RecipeActivity.readStoredFile());
+                allTiles = buildPatternFromIntArray(sizeOfPattern, RecipeActivity.readStoredFile());
             } catch (Throwable t) {
                 System.out.println("Exception: " + t.toString());
             }
         }
         else {
-            patternSquares = buildPatternFromList(sizeOfPattern, patternValues);
+            allTiles = buildPatternFromIntArray(sizeOfPattern, patternAsIntArray);
         }
     }
 
     // BUILDING PATTERN FROM LIST OF VALUES
-    public ArrayList<ArrayList<SquareModel>> buildPatternFromList(int size, int[] patternValues){
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // x and y direction => rectangular squares
-        patternSquares = new ArrayList<ArrayList<SquareModel>>();
+    public ArrayList<ArrayList<TileModel>> buildPatternFromIntArray(int size, int[] patternValues){
+        Vector2 sizeVec = new Vector2(tileSize, tileSize); // x and y direction => rectangular tiles
+        allTiles = new ArrayList<ArrayList<TileModel>>();
         for (int i = 0; i < size; i++) {
-            patternSquares.add(new ArrayList<SquareModel>());
+            allTiles.add(new ArrayList<TileModel>());
             for (int j = 0; j < size; j++) {
-                Vector2 pos = new Vector2(squareSize * j, squareSize * i);
-                SquareModel square = new SquareModel(pos, sizeVec);
-                square.setSize(squareSize);
-                patternSquares.get(i).add(square);
+                Vector2 pos = new Vector2(tileSize * j, tileSize * i);
+                TileModel tile = new TileModel(pos, sizeVec);
+                tile.setSize(tileSize);
+                allTiles.get(i).add(tile);
 
                 if (patternValues[i*size + j] == 1) {
-                    patternSquares.get(i).get(j).setSquareState(SquareState.FULL);
+                    allTiles.get(i).get(j).setTileState(TileState.FULL);
 
                 } else if (patternValues[i*size + j] == 0) {
-                    patternSquares.get(i).get(j).setSquareState(SquareState.EMPTY);
+                    allTiles.get(i).get(j).setTileState(TileState.EMPTY);
                 }
             }
         }
-        return patternSquares;
+        return allTiles;
     }
 
     // BOARD MODEL CLASS IS PARCELABLE
@@ -87,90 +83,89 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         return ((Parcelable)this).hashCode();
     }
 
-    // CHANGE THE SQUARE STATE AND NOTIFY THE DRAW MODEL
-    public void changeSquareState(int row, int col){
-        if (getSquareState(row, col) == SquareState.EMPTY) {
-            setSquareState(row, col, SquareState.FULL);
+    // CHANGE THE TILE STATE AND NOTIFY THE DRAW MODEL
+    public void changeTileState(int row, int col){
+        if (getTileState(row, col) == TileState.EMPTY) {
+            setTileState(row, col, TileState.FULL);
         }
-        else if (getSquareState(row, col) == SquareState.FULL) {
-            setSquareState(row, col, SquareState.EMPTY);
+        else if (getTileState(row, col) == TileState.FULL) {
+            setTileState(row, col, TileState.EMPTY);
         }
         notifyObservers(this);
     }
 
-    public void receivePattern(ArrayList<ArrayList<SquareModel>> pattern){
-        this.patternSquares = pattern;
+    public void receiveAllTilesOnBoard(ArrayList<ArrayList<TileModel>> allTiles){
+        this.allTiles = allTiles;
     }
 
-    // CROPS PATTERN BASED ON OUTLINE OF BLACK SQUARES
-    public ArrayList<ArrayList<SquareModel>> cropPattern() {
+    public ArrayList<ArrayList<TileModel>> cropPatternBasedOnTouchedTiles() {
         getSizeOfPattern();
-        croppedPatternSquares = new ArrayList<ArrayList<SquareModel>>();
-        for (int i = 0; i < patternSquares.size(); i++) {
-            ArrayList<SquareModel> newSquareRow = new ArrayList<SquareModel>();
-            for (int j = 0; j < patternSquares.get(i).size(); j++) {
-                if (getXposOfSquare(patternSquares, i, j) >= actualPatternDim[0] && patternSquares.get(i).get(j).getPosition().getX() <= actualPatternDim[1] && patternSquares.get(i).get(j).getPosition().getY() >= actualPatternDim[2] && patternSquares.get(i).get(j).getPosition().getY() <= actualPatternDim[3]) {
-                    newSquareRow.add(patternSquares.get(i).get(j));
+        tilesInPattern = new ArrayList<ArrayList<TileModel>>();
+        for (int i = 0; i < allTiles.size(); i++) {
+            ArrayList<TileModel> rowOfTiles = new ArrayList<TileModel>();
+            for (int j = 0; j < allTiles.get(i).size(); j++) {
+                if (getXposOfTile(allTiles, i, j) >= retrieveDrawnPatternDim[0] && allTiles.get(i).get(j).getPosition().getX() <= retrieveDrawnPatternDim[1] && allTiles.get(i).get(j).getPosition().getY() >= retrieveDrawnPatternDim[2] && allTiles.get(i).get(j).getPosition().getY() <= retrieveDrawnPatternDim[3]) {
+                    rowOfTiles.add(allTiles.get(i).get(j));
                 }
             }
-            if(newSquareRow.size() > 0) {
-                croppedPatternSquares.add(newSquareRow);
+            if(rowOfTiles.size() > 0) {
+                tilesInPattern.add(rowOfTiles);
             }
         }
-        return croppedPatternSquares;
+        return tilesInPattern;
     }
 
-    // GET THE HORIZONTAL POSITION OF A SQUARE
-    public float getXposOfSquare(ArrayList<ArrayList<SquareModel>> pattern, int i, int j){
-        return pattern.get(i).get(j).getPosition().getX();
+    // GET THE HORIZONTAL POSITION OF A TILE
+    public float getXposOfTile(ArrayList<ArrayList<TileModel>> allTiles, int i, int j){
+        return allTiles.get(i).get(j).getPosition().getX();
     }
 
 
     public void getSizeOfPattern() {
-        if (patternSquares.size() == 0) {
-            noneTouchedSquaresOnScreen = true;
+        if (allTiles.size() == 0) {
+            noTouchedSquaresOnScreen = true;
         } else {
-            noneTouchedSquaresOnScreen = false;
-            ArrayList<Integer> horizontal = new ArrayList<Integer>();
-            ArrayList<Integer> vertical = new ArrayList<Integer>();
+            noTouchedSquaresOnScreen = false;
+            ArrayList<Integer> tilesHoriziontalDirection = new ArrayList<Integer>();
+            ArrayList<Integer> tilesVerticalDirection = new ArrayList<Integer>();
 
-            for (int i = 0; i < patternSquares.size(); i++) {
-                for (int j = 0; j < patternSquares.size(); j++) {
-                    SquareState state = patternSquares.get(i).get(j).getSquareState();
+            for (int i = 0; i < allTiles.size(); i++) {
+                for (int j = 0; j < allTiles.size(); j++) {
+                    TileState state = allTiles.get(i).get(j).getTileState();
 
-                    if (state == SquareState.FULL) {
-                        horizontal.add((int) patternSquares.get(i).get(j).getPosition().getX());
-                        vertical.add((int) patternSquares.get(i).get(j).getPosition().getY());
+                    if (state == TileState.FULL) {
+                        tilesHoriziontalDirection.add((int) allTiles.get(i).get(j).getPosition().getX());
+                        tilesVerticalDirection.add((int) allTiles.get(i).get(j).getPosition().getY());
                     }
                 }
             }
-            Collections.sort(horizontal);
-            actualPatternDim[0] = horizontal.get(0); // Left
-            actualPatternDim[1] = horizontal.get(horizontal.size() - 1); // Right
-            Collections.sort(vertical);
-            actualPatternDim[2] = vertical.get(0); // Top
-            actualPatternDim[3] = vertical.get(vertical.size() - 1); // Bottom
+            Collections.sort(tilesHoriziontalDirection);
+            retrieveDrawnPatternDim[0] = tilesHoriziontalDirection.get(0); // Left
+            retrieveDrawnPatternDim[1] = tilesHoriziontalDirection.get(tilesHoriziontalDirection.size() - 1); // Right
+            Collections.sort(tilesVerticalDirection);
+            retrieveDrawnPatternDim[2] = tilesVerticalDirection.get(0); // Top
+            retrieveDrawnPatternDim[3] = tilesVerticalDirection.get(tilesVerticalDirection.size() - 1); // Bottom
 
-            numOfSquaresInBoardWidth = ((actualPatternDim[1] - actualPatternDim[0]) / squareSize + 1);
-            numOfSquaresInBoardHeight = ((actualPatternDim[3] - actualPatternDim[2]) / squareSize + 1);
+            numOfTilesInBoardWidth = ((retrieveDrawnPatternDim[1] - retrieveDrawnPatternDim[0]) / tileSize + 1);
+            numOfTilesInBoardHeight = ((retrieveDrawnPatternDim[3] - retrieveDrawnPatternDim[2]) / tileSize + 1);
         }
     }
 
 
     // USED WHEN SENDING DATA
     public void writeToParcel(Parcel destination, int flags){
-        destination.writeInt(patternSquares.size());
-        destination.writeInt(squareSize);
-        destination.writeInt(numOfSquaresInBoardHeight);
-        destination.writeIntArray(getPatternAsList());
+        destination.writeInt(allTiles.size());
+        destination.writeInt(tileSize);
+        destination.writeInt(numOfTilesInBoardHeight);
+        destination.writeIntArray(getPatternAsIntArray());
     }
 
-    // CONVERT PATTERN AS A LIST OF SQUARES TO A LIST OF INTEGERS
-    public int[] getPatternAsList() {
-        int[] patternValues = new int[patternSquares.size() * patternSquares.size()];
-        for (int i = 0; i < patternSquares.size(); i++) {
-            for (int j = 0; j < patternSquares.get(i).size(); j++) {
-                patternValues[i * patternSquares.size() + j] = patternSquares.get(i).get(j).getSquareState().value;
+    // CONVERT PATTERN AS A LIST OF TILES TO A LIST OF INTEGERS
+    public int[] getPatternAsIntArray() {
+        int[] patternValues = new int[allTiles.size() * allTiles.size()];
+        for (int i = 0; i < allTiles.size(); i++) {
+            for (int j = 0; j < allTiles.get(i).size(); j++) {
+                patternValues[i * allTiles.size() + j] = allTiles.get(i).get(j).getTileState().value;
             }
         }
         return patternValues;
@@ -192,20 +187,20 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
 
     // GETERS AND SETERS
     //------------------------------------------------------------
-    public int getRows() {
-        return rows;
+    public int getRowsOnBoard() {
+        return rowsOnBoard;
     }
 
-    public int getCols(){
-        return cols;
+    public int getColsOnBoard(){
+        return colsOnBoard;
     }
 
-    public SquareState getSquareState (int row, int col){
-        return grid.getSquareState(row, col);
+    public TileState getTileState(int row, int col){
+        return grid.getTileState(row, col);
     }
 
-    public void setSquareState (int row, int col, SquareState state){
-        grid.setSquareState(row, col, state);
+    public void setTileState(int row, int col, TileState state){
+        grid.setTileState(row, col, state);
     }
     //------------------------------------------------------------
 

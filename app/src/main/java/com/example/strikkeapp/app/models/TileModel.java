@@ -6,29 +6,27 @@ import sheep.graphics.Image;
 import sheep.math.Vector2;
 import android.graphics.Canvas;
 
-import java.io.Serializable;
-
 
 /**
  * Created by oda on 02.06.15.
  */
-public class SquareModel extends Sprite{
+public class TileModel extends Sprite{
 
     private static Image background = new Image(R.drawable.empty);
     private static Image pattern = new Image(R.drawable.full);
-    private SquareState state = SquareState.EMPTY;
+    private TileState state = TileState.EMPTY;
     private Vector2 size;
     private Image currentImage = background;
     public float scaleFactor  = 0.9f;
 
     //CONSTRUCTOR
-    public SquareModel (Vector2 pos, Vector2 size){
+    public TileModel(Vector2 pos, Vector2 size){
         super(background);
         setPosition(pos);
         this.size = size;
     }
 
-    // draw the squares on the canvas with suitable size and image
+    // draw the tiles on the canvas with suitable size and image
     @Override
     public void draw (Canvas canvas){
         if (canvas == null) return;
@@ -57,22 +55,22 @@ public class SquareModel extends Sprite{
         currentImage = image;
     }
 
-    // update the squares continuously
+    // update the tiles continuously
     @Override
     public void update(float dt) {
         super.update(dt);
     }
 
     // change the state of the square
-    public void setSquareState(SquareState state) {
+    public void setTileState(TileState state) {
         this.state = state;
     }
 
-    public SquareState getSquareState(){
+    public TileState getTileState(){
         return this.state;
     }
 
-    public int getSquareSize(){
+    public int getTileSize(){
         return (int)size.getX();
     }
 }

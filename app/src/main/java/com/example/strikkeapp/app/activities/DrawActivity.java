@@ -6,7 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Display;
+import android.util.DisplayMetrics;
+
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
@@ -17,12 +18,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import sheep.game.Game;
 
@@ -34,9 +33,9 @@ public class DrawActivity extends Activity {
     private TextView title;
     private String patternID = "";
     final Context context = this;
-    public int[] patternList;
-    int rows = 15; //it these are changed, the number of columns in RecipeModel must be changed as well!
-    int cols = 15;
+    public int[] patternAsList;
+    int rows = Resources.rows; //if these are changed, the number of columns in RecipeModel must be changed as well!
+    int cols = Resources.cols;
     public CustomAdapter adapter;
 
 
@@ -57,17 +56,20 @@ public class DrawActivity extends Activity {
 
         Game patternModule = new Game(this, null);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        int screenWidth = display.getWidth();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        Resources.screenWidth = screenWidth;
+        Resources.screenHeight = displayMetrics.heightPixels;
 
         board = new BoardModel(rows, cols);
-        final DrawBoardView drawBoardView = new DrawBoardView(board, screenWidth, this);
+        final DrawBoardView drawBoardView = new DrawBoardView(board, this);
 
         patternModule.pushState(drawBoardView);
         setContentView(R.layout.draw_pattern_screen);
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.squareSize));
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
         linearLayout.addView(patternModule);
 
         title = (TextView) findViewById(R.id.title);
@@ -96,22 +98,24 @@ public class DrawActivity extends Activity {
             @Override
             public void onClick(View v) {
                 /*
-                if (board.noneTouchedSquaresOnScreen) { // no left square i.e no squares have been touched adn pattern is empty
+                if (board.noTouchedSquaresOnScreen) { // no left square i.e no tiles have been touched adn pattern is empty
                     showMessage();
-                    // TODO: Not allowed to save board if none of the squares are touched i.e there is no pattern
+                    // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
                 } else {
                 */
-                    AlertDialog.Builder nameOfSavedPattern = new AlertDialog.Builder(context);
-                    nameOfSavedPattern.setTitle("Name your pattern: ");
+                    AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
+                    nameSavedPattern.setTitle("Name your pattern: ");
                     final EditText nameOfPattern = new EditText(context);
                     nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
-                    nameOfSavedPattern.setView(nameOfPattern);
-                    nameOfSavedPattern.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    nameSavedPattern.setView(nameOfPattern);
+                    nameSavedPattern.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            board.isFinished = true;
-                            board.receivePattern(drawBoardView.sendFinishedPattern());
+                    Resources.recipeName = nameOfPattern.getText().toString();
+                            System.out.println("NAVN: "+Resources.recipeName);
+                            board.isFinishedDrawing = true;
+                            board.receiveAllTilesOnBoard(drawBoardView.sendFinishedPattern());
 
                             saveClicked(board);
 
@@ -131,14 +135,14 @@ public class DrawActivity extends Activity {
                             startActivity(intent);
                         }
                     });
-                    nameOfSavedPattern.setNegativeButton("Avbryt", new DialogInterface.OnClickListener() {
+                    nameSavedPattern.setNegativeButton("Avbryt", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     });
 
-                    nameOfSavedPattern.show();
+                    nameSavedPattern.show();
                 }
            // }
         });
@@ -147,13 +151,13 @@ public class DrawActivity extends Activity {
     // Saving the pattern as a list in a file named "storePattern"
     private void saveClicked(BoardModel bModel) {
         try{
-            write(patternList);
+            write(patternAsList);
         }
         catch (Throwable t) {
             Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
             System.out.println("ERROR: " + t);
         }
-        patternList = bModel.getPatternAsList();
+        patternAsList = bModel.getPatternAsIntArray();
     }
 
     public void showMessage(){
@@ -171,7 +175,7 @@ public class DrawActivity extends Activity {
     public void write (int[] pattern) throws IOException{
         // TODO: save patterns as an int array when the "save" button has been pushed.
         // TODO: store patterns in another list that can be retrieved from the activity "Existing patterns"
-        String savedPattern = makeString(board.getPatternAsList());
+        String savedPattern = makeString(board.getPatternAsIntArray());
         FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
         fOut.write(savedPattern.getBytes());
         fOut.close();

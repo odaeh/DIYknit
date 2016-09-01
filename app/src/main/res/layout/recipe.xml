@@ -8,6 +8,15 @@
     android:background="@drawable/knitted"
     android:layout_gravity="center">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/title"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,31 +24,29 @@
         android:id="@+id/recipeView"
         android:layout_gravity="center_vertical"
         android:background="@drawable/background">
+
     </LinearLayout>
+
     <Button
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_height="wrap_content"
         android:text="Draw again."
         android:background="@drawable/button"
         android:layout_gravity="center_horizontal"
         android:id="@+id/backToDrawingButton"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="#ffffff"
-        android:layout_gravity="center_horizontal">
+
     <TextView
         android:id="@+id/recipeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="25sp"
         android:textStyle="italic"
-        android:textColor="#4B7948">
+        android:textColor="#4B7948"
+        android:gravity="center|center_horizontal">
     </TextView>
-    </LinearLayout>
-        <Button
+
+    <Button
             android:layout_width="150dp"
             android:layout_marginTop="50dp"
             android:layout_height="wrap_content"
@@ -47,4 +54,5 @@
             android:background="@drawable/button"
             android:layout_gravity="center_horizontal"
             android:id="@+id/backToMainMenuButton"/>
-    </LinearLayout>
+
+</LinearLayout>

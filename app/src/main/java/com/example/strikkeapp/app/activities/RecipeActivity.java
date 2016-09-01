@@ -3,14 +3,12 @@ package com.example.strikkeapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
@@ -18,32 +16,22 @@ import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.RecipeModel;
 import com.example.strikkeapp.app.views.RecipeView;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 import sheep.game.Game;
 
 public class RecipeActivity extends Activity {
 
-   // private RecipeModel recipe;
     public int circumference;
     public int stitches;
     private Button backToMainMenuButton;
     private Button backToDrawingButton;
     private BoardModel bModel;
+    private TextView title;
     private TextView recipeText;
     public static String storedPattern;
     public static int[] patternAsList;
     int numCasts;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +59,9 @@ public class RecipeActivity extends Activity {
             patternModule.pushState(view);
 
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-            float heightOfPatternModule = (bModel.numOfSquaresInBoardHeight * bModel.squareSize) / 2;
-            int widthOfOnePatternSequence = bModel.numOfSquaresInBoardWidth * bModel.squareSize;
-            float widthOfPatternModule = ((recipe.columns / bModel.numOfSquaresInBoardWidth) * widthOfOnePatternSequence) / 2;
+            float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * bModel.tileSize) / 2;
+            int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * bModel.tileSize;
+            float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
 
             LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
             patternModuleView.gravity = Gravity.CENTER;
@@ -99,17 +87,20 @@ public class RecipeActivity extends Activity {
                     startActivity(intent);
                 }
             });
+
+            title = (TextView) findViewById(R.id.title);
+            title.setText(Resources.recipeName);
     }
 
     private void setRecipeText(){
        recipeText = (TextView) findViewById(R.id.recipeText);
        float numMasks = (circumference * stitches)/10; // stitches pr 10 cm
-       int numPatterns = (int)numMasks / bModel.numOfSquaresInBoardWidth;
-        if ((numMasks - numPatterns*bModel.numOfSquaresInBoardWidth) >= (bModel.numOfSquaresInBoardWidth / 2)){
-            numCasts = (numPatterns+1)*bModel.numOfSquaresInBoardWidth;
+       int numPatterns = (int)numMasks / bModel.numOfTilesInBoardWidth;
+        if ((numMasks - numPatterns*bModel.numOfTilesInBoardWidth) >= (bModel.numOfTilesInBoardWidth / 2)){
+            numCasts = (numPatterns+1)*bModel.numOfTilesInBoardWidth;
         }
         else {
-            numCasts = numPatterns * bModel.numOfSquaresInBoardWidth;
+            numCasts = numPatterns * bModel.numOfTilesInBoardWidth;
         }
         System.out.println("Antall masker i omkretsen: " + numPatterns);
         System.out.println("Antall masker: " + numCasts);

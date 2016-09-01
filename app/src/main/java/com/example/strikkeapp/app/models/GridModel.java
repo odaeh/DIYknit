@@ -1,6 +1,5 @@
 package com.example.strikkeapp.app.models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,7 +7,7 @@ import java.util.ArrayList;
  */
 public class GridModel{
 
-    public ArrayList<ArrayList<SquareState>> grid;
+    public ArrayList<ArrayList<TileState>> grid;
     final int rows;
     final int cols;
 
@@ -19,29 +18,29 @@ public class GridModel{
         initGrid();
     }
 
-    // all the squares of the grid are filled with a state = empty
+    // all the tiles of the grid are filled with a state = empty
     private void initGrid(){
-        ArrayList<ArrayList<SquareState>> grid = new ArrayList();
+        ArrayList<ArrayList<TileState>> grid = new ArrayList();
         for (int i = 0; i < rows; i++){
-            ArrayList<SquareState> row = new ArrayList();
+            ArrayList<TileState> row = new ArrayList();
             for (int j = 0; j < cols; j++){
-                row.add(SquareState.EMPTY);
+                row.add(TileState.EMPTY);
             }
             grid.add(row);
         }
         this.grid = grid;
     }
 
-    public SquareState getSquareState(int row, int col){
+    public TileState getTileState(int row, int col){
         if( row >= getRows() || col >= getCols()){
-            return SquareState.EMPTY;
+            return TileState.EMPTY;
         }
         else {
             return grid.get(row).get(col);
         }
     }
 
-    public void setSquareState(int row, int col, SquareState state){
+    public void setTileState(int row, int col, TileState state){
         if (row >= getRows() || col >= getCols()) {
             return;
         }

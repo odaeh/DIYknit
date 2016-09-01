@@ -1,16 +1,14 @@
 package com.example.strikkeapp.app.views;
 
+import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.activities.DrawActivity;
 import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.OnChangeListener;
-import com.example.strikkeapp.app.models.SquareModel;
-import com.example.strikkeapp.app.models.SquareState;
+import com.example.strikkeapp.app.models.TileModel;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
 import java.util.ArrayList;
 import sheep.game.State;
@@ -22,35 +20,33 @@ import sheep.math.Vector2;
 public class DrawBoardView extends State implements OnChangeListener<BoardModel> {
 
     private DrawActivity activity;
-    private float screenWidth;
     private BoardModel board;
     public int squareSize;
     private boolean doneInitializing = false;
-    private ArrayList<ArrayList<SquareModel>> squares;
+    private ArrayList<ArrayList<TileModel>> squares;
     private final float SCROLL_THRESHOLD = 10;
     private boolean isOnClick;
 
     // CONSTRUCTOR
-    public DrawBoardView(BoardModel board, int screenWidth, DrawActivity activity) {
+    public DrawBoardView(BoardModel board, DrawActivity activity) {
         this.board = board;
         this.board.addListener(this);
         this.activity = activity;
-        this.screenWidth = screenWidth;
 
         initializeSquares();
         doneInitializing = true;
-        board.squareSize = squareSize;
+        board.tileSize = squareSize;
     }
 
     public void initializeSquares() {
         calculateSquareSize();
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular squares
-        ArrayList<ArrayList<SquareModel>> squares = new ArrayList<ArrayList<SquareModel>>();
-        for (int i = 0; i < this.board.getRows(); i++) {
-            ArrayList<SquareModel> squareRow = new ArrayList<SquareModel>();
-            for (int j = 0; j < this.board.getCols(); j++) {
+        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular tiles
+        ArrayList<ArrayList<TileModel>> squares = new ArrayList<ArrayList<TileModel>>();
+        for (int i = 0; i < this.board.getRowsOnBoard(); i++) {
+            ArrayList<TileModel> squareRow = new ArrayList<TileModel>();
+            for (int j = 0; j < this.board.getColsOnBoard(); j++) {
                 Vector2 pos = new Vector2(squareSize * j, squareSize * i);
-                SquareModel square = new SquareModel(pos, sizeVec);
+                TileModel square = new TileModel(pos, sizeVec);
                 square.setSize(squareSize);
                 squareRow.add(square);
             }
@@ -60,18 +56,18 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     }
 
     public void calculateSquareSize(){
-        int rows = board.getRows();
-        squareSize = (int) (screenWidth / rows);
+        int rows = board.getRowsOnBoard();
+        squareSize = (int) (Resources.screenWidth / rows);
     }
 
   //--------------------------------------------------------------------------
   // CHANGE LISTENER METHODS:
   //--------------------------------------------------------------------------
     public void onChange(BoardModel board) {
-        for (int i = 0; i < board.getRows(); i++) {
-            for (int j = 0; j < board.getCols(); j++) {
-                SquareModel square = squares.get(i).get(j);
-                square.setSquareState(board.getSquareState(i, j));
+        for (int i = 0; i < board.getRowsOnBoard(); i++) {
+            for (int j = 0; j < board.getColsOnBoard(); j++) {
+                TileModel square = squares.get(i).get(j);
+                square.setTileState(board.getTileState(i, j));
             }
         }
     }
@@ -79,8 +75,8 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     public void update(float dt){
         super.update(dt);
         if (!doneInitializing) return;
-        for (int i = 0; i < board.getRows(); i++) {
-            for (int j = 0; j < board.getCols(); j++) {
+        for (int i = 0; i < board.getRowsOnBoard(); i++) {
+            for (int j = 0; j < board.getColsOnBoard(); j++) {
                 squares.get(i).get(j).update(dt);
             }
         }
@@ -91,8 +87,8 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         if (canvas == null) return;
         canvas.drawColor(Color.rgb(151, 177, 174));
         if (!doneInitializing || canvas == null) return;
-        for (int i = 0; i < board.getRows(); i++) {
-            for (int j = 0; j < board.getCols(); j++) {
+        for (int i = 0; i < board.getRowsOnBoard(); i++) {
+            for (int j = 0; j < board.getColsOnBoard(); j++) {
                 squares.get(i).get(j).draw(canvas);
             }
         }
@@ -109,7 +105,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
 
                 int col = x / squareSize;
                 int row = y / squareSize;
-                board.changeSquareState(row, col);
+                board.changeTileState(row, col);
                 isOnClick = true;
                 break;
 
@@ -125,13 +121,13 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
 
     }
 
-    // return the final states of all the squares on the grid
-    public ArrayList<ArrayList<SquareModel>> sendFinishedPattern(){
-        ArrayList<ArrayList<SquareModel>> pattern = new ArrayList<ArrayList<SquareModel>>();
+    // return the final states of all the tiles on the grid
+    public ArrayList<ArrayList<TileModel>> sendFinishedPattern(){
+        ArrayList<ArrayList<TileModel>> pattern = new ArrayList<ArrayList<TileModel>>();
         for (int i = 0; i < squares.size(); i++){
-            ArrayList<SquareModel> row = new ArrayList();
+            ArrayList<TileModel> row = new ArrayList();
             for (int j = 0; j < squares.get(i).size(); j++){
-                SquareModel state = squares.get(i).get(j);
+                TileModel state = squares.get(i).get(j);
                 row.add(state);
             }
             pattern.add(row);
