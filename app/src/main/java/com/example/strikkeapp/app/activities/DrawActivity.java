@@ -128,29 +128,21 @@ public class DrawActivity extends Activity {
         final EditText nameOfPattern = new EditText(context);
         nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
         nameSavedPattern.setView(nameOfPattern);
-        Resources.recipeName = nameOfPattern.getText().toString();
+
         nameSavedPattern.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                System.out.println("NAVN: " + Resources.recipeName);
                 board.isFinishedDrawing = true;
                 board.receiveAllTilesOnBoard(drawBoardView.sendFinishedPattern());
 
-                writePatternToFile(board);
+                Resources.recipeName = nameOfPattern.getText().toString();
 
-                // Send the pattern to generate a recipe
+                writePatternToFile(board);
+                addPatternToExistingPatternsStack(nameOfPattern);
+
                 Intent intent = new Intent(DrawActivity.this, RecipeActivity.class);
                 intent.putExtra("boardModel", board);
                 intent.putExtra("patternID", patternID);
-
-                // Store patternID in stack in Resources
-                patternID = nameOfPattern.getText().toString();
-                if (Resources.fifoSavedRecipes.size() >= 3) {
-                    Resources.fifoSavedRecipes.removeFirst();
-                }
-                Resources.fifoSavedRecipes.add(patternID); // adding to the end of the list
-
                 startActivity(intent);
             }
         });
@@ -160,8 +152,16 @@ public class DrawActivity extends Activity {
                 dialog.cancel();
             }
         });
-
         nameSavedPattern.show();
+    }
+
+    private void addPatternToExistingPatternsStack(EditText nameOfPattern) {
+        patternID = nameOfPattern.getText().toString();
+
+        if (Resources.fifoSavedRecipes.size() >= 3) {
+            Resources.fifoSavedRecipes.removeFirst();
+        }
+        Resources.fifoSavedRecipes.add(patternID); // adds to the end of the list.
     }
 
     private void writePatternToFile(BoardModel bModel) {
