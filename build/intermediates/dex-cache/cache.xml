@@ -12,14 +12,14 @@
         jar="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         revision="21.0.0"
-        sha1="98b9dd7e6b64e407c197b24a3dafa7f541e73c60">
+        sha1="5a329b3b2d1e9527b8b5bf88730784e22597216b">
         <dex dex="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_ca351304b80e57311dcd355eb72e800d4882aca5\classes.dex" />
     </item>
     <item
         jar="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         revision="21.0.0"
-        sha1="66d2d1f40ab456926330ecf33808450a6bb163e0">
+        sha1="a3f1324dd6a5a094ebccbac0719e172fa7874af8">
         <dex dex="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_445bd0579972b20fb962d78dd901e6a9f79f5138\classes.dex" />
     </item>
 

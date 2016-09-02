@@ -46,30 +46,21 @@ public class DrawActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
-        createHelpDialog(instructionsHelp);
+        getDisplayMetrics();
 
         Game patternModule = new Game(this, null); // From external library.
 
-        getDisplayMetrics();
-
         board = new BoardModel(rows, cols);
         final DrawBoardView drawBoardView = new DrawBoardView(board, this);
-
         patternModule.pushState(drawBoardView);
         setContentView(R.layout.draw_pattern_screen);
 
-        createLayoutElements(patternModule);
+        AlertDialog.Builder userInstructions = new AlertDialog.Builder(context);
+        createUserHelpDialog(userInstructions);
+
         createHelpButton();
+        createLayoutElements(patternModule);
         createSaveButton(drawBoardView);
-    }
-
-    private void createLayoutElements(Game patternModule) {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
-        linearLayout.addView(patternModule);
-
-        title = (TextView) findViewById(R.id.title);
     }
 
     private void getDisplayMetrics() {
@@ -80,9 +71,11 @@ public class DrawActivity extends Activity {
         Resources.screenHeight = displayMetrics.heightPixels;
     }
 
-    private void createHelpDialog(AlertDialog.Builder instructionsHelp) {
+    private void createUserHelpDialog(AlertDialog.Builder instructionsHelp) {
         instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
-        instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n Lagre mønsteret når du er ferdig for å få oppskriften.");
+        instructionsHelp.setMessage("Trykk på rutene for å lage mønster. \n \n  " +
+                "Dersom du dobbelklikker vil en farget rute bli tom igjen. \n \n " +
+                "Lagre mønsteret når du er ferdig for å få oppskriften.");
         instructionsHelp.setNegativeButton("Lukk", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -92,85 +85,23 @@ public class DrawActivity extends Activity {
 
         instructionsHelp.show();
     }
-
-    // Saving the pattern as a list in a file named "storePattern"
-    private void saveClicked(BoardModel bModel) {
-        patternAsList = bModel.getPatternAsIntArray();
-        try{
-            write(patternAsList);
-        }
-        catch (Throwable t) {
-            Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
-            System.out.println("ERROR: " + t);
-        }
-
-    }
-
-    public void showMessage(){
-        Toast.makeText(this, "Rutenettet er tomt. Vennligst tegn et mønster.", Toast.LENGTH_LONG).show();
-    }
-
-    public static String makeString(int[] intArray){
-        String str = "";
-        for (int i = 0; i < intArray.length ; i++){
-            str = str + intArray[i];
-        }
-        return str;
-    }
-
-    public void write (int[] pattern) throws IOException{
-        // TODO: save patterns as an int array when the "save" button has been pushed.
-        // TODO: store patterns in another list that can be retrieved from the activity "Existing patterns"
-        String savedPattern = makeString(board.getPatternAsIntArray());
-        FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
-        fOut.write(savedPattern.getBytes());
-        fOut.close();
-
-        File file = new File(Environment.getExternalStorageDirectory() + "/a directory/" + "patternID");
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        FileWriter fw = new FileWriter(file.getAbsoluteFile());
-        BufferedWriter bw = new BufferedWriter(fw);
-
-        for (int i = 0; i < pattern.length; i++){
-            bw.write(pattern[i]);
-        }
-        bw.close();
-
-    }
-
-    private void addStoredPattern(String storedPattern){
-        if (Resources.storedPatternsAsStrings[0].equals("")){
-            Resources.storedPatternsAsStrings[0] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[0]);
-        }
-        else if (Resources.storedPatternsAsStrings[1].equals("")){
-            Resources.storedPatternsAsStrings[1] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[1]);
-
-        }
-        else if (Resources.storedPatternsAsStrings[2].equals("")){
-            Resources.storedPatternsAsStrings[2] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[2]);
-
-        }
-        else{ // the first pattern is deleted and replaced
-            Resources.storedPatternsAsStrings[0] = storedPattern;
-        }
-    }
     public void createHelpButton(){
         helpButton = (Button)  findViewById(R.id.helpButton);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder instructionsHelp = new AlertDialog.Builder(context);
-                createHelpDialog(instructionsHelp);
+                createUserHelpDialog(instructionsHelp);
             }
         });
+    }
+
+    private void createLayoutElements(Game patternModule) {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
+        linearLayout.addView(patternModule);
+
+        title = (TextView) findViewById(R.id.title);
     }
 
     public void createSaveButton(final DrawBoardView drawBoardView){
@@ -183,13 +114,16 @@ public class DrawActivity extends Activity {
                     // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
                 } else {
                     AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
-                    createDialog(nameSavedPattern, drawBoardView);
+                    createGiveNameDialog(nameSavedPattern, drawBoardView);
                 }
             }
         });
     }
+    public void showMessage() {
+        Toast.makeText(this, "Rutenettet er tomt. Vennligst tegn et mønster.", Toast.LENGTH_LONG).show();
+    }
 
-    public void createDialog(AlertDialog.Builder nameSavedPattern, final DrawBoardView drawBoardView){
+    public void createGiveNameDialog(AlertDialog.Builder nameSavedPattern, final DrawBoardView drawBoardView){
         nameSavedPattern.setTitle("Name your pattern: ");
         final EditText nameOfPattern = new EditText(context);
         nameOfPattern.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -199,12 +133,11 @@ public class DrawActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-
                 System.out.println("NAVN: " + Resources.recipeName);
                 board.isFinishedDrawing = true;
                 board.receiveAllTilesOnBoard(drawBoardView.sendFinishedPattern());
 
-                saveClicked(board);
+                writePatternToFile(board);
 
                 // Send the pattern to generate a recipe
                 Intent intent = new Intent(DrawActivity.this, RecipeActivity.class);
@@ -230,4 +163,70 @@ public class DrawActivity extends Activity {
 
         nameSavedPattern.show();
     }
+
+    private void writePatternToFile(BoardModel bModel) {
+        patternAsList = bModel.getPatternAsIntArray();
+        try{
+            write(patternAsList);
+        }
+        catch (Throwable t) {
+            Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
+            System.out.println("ERROR: " + t);
+        }
+
+    }
+
+    public void write (int[] pattern) throws IOException{
+        // TODO: save patterns as an int array when the "save" button has been pushed.
+        // TODO: store patterns in another list that can be retrieved from the activity "Existing patterns"
+        String savedPattern = makeString(board.getPatternAsIntArray());
+        FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
+        fOut.write(savedPattern.getBytes());
+        fOut.close();
+
+        File file = new File(Environment.getExternalStorageDirectory() + "/a directory/" + "patternID");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+
+        for (int i = 0; i < pattern.length; i++){
+            bw.write(pattern[i]);
+        }
+        bw.close();
+
+    }
+    public static String makeString(int[] intArray){
+        String str = "";
+        for (int i = 0; i < intArray.length ; i++){
+            str = str + intArray[i];
+        }
+        return str;
+    }
+
+    /*
+    private void addStoredPattern(String storedPattern){
+        if (Resources.storedPatternsAsStrings[0].equals("")){
+            Resources.storedPatternsAsStrings[0] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatternsAsStrings[0]);
+        }
+        else if (Resources.storedPatternsAsStrings[1].equals("")){
+            Resources.storedPatternsAsStrings[1] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatternsAsStrings[1]);
+
+        }
+        else if (Resources.storedPatternsAsStrings[2].equals("")){
+            Resources.storedPatternsAsStrings[2] = storedPattern;
+            System.out.println("HER ER FILEN!!!!!!!");
+            System.out.print(Resources.storedPatternsAsStrings[2]);
+
+        }
+        else{ // the first pattern is deleted and replaced
+            Resources.storedPatternsAsStrings[0] = storedPattern;
+        }
+    }
+    */
 }
