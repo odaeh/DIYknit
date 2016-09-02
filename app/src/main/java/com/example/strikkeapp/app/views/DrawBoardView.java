@@ -5,11 +5,9 @@ import com.example.strikkeapp.app.activities.DrawActivity;
 import com.example.strikkeapp.app.models.BoardModel;
 import com.example.strikkeapp.app.models.OnChangeListener;
 import com.example.strikkeapp.app.models.TileModel;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.MotionEvent;
-
 import java.util.ArrayList;
 import sheep.game.State;
 import sheep.math.Vector2;
@@ -21,9 +19,9 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
 
     private DrawActivity activity;
     private BoardModel board;
-    public int squareSize;
+    public int tileSize;
     private boolean doneInitializing = false;
-    private ArrayList<ArrayList<TileModel>> squares;
+    private ArrayList<ArrayList<TileModel>> tiles;
     private final float SCROLL_THRESHOLD = 10;
     private boolean isOnClick;
 
@@ -33,32 +31,28 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         this.board.addListener(this);
         this.activity = activity;
 
-        initializeSquares();
+        initializeTiles();
         doneInitializing = true;
-        board.tileSize = squareSize;
     }
 
-    public void initializeSquares() {
-        calculateSquareSize();
-        Vector2 sizeVec = new Vector2(squareSize, squareSize); // rectangular tiles
-        ArrayList<ArrayList<TileModel>> squares = new ArrayList<ArrayList<TileModel>>();
-        for (int i = 0; i < this.board.getRowsOnBoard(); i++) {
+    public void initializeTiles() {
+        this.tileSize = Resources.tileSize;
+        Vector2 sizeVec = new Vector2(tileSize, tileSize); // rectangular tiles
+        ArrayList<ArrayList<TileModel>> tiles = new ArrayList<ArrayList<TileModel>>();
+        for (int i = 0; i < Resources.rows; i++) {
             ArrayList<TileModel> squareRow = new ArrayList<TileModel>();
-            for (int j = 0; j < this.board.getColsOnBoard(); j++) {
-                Vector2 pos = new Vector2(squareSize * j, squareSize * i);
+            for (int j = 0; j < Resources.cols; j++) {
+                Vector2 pos = new Vector2(tileSize * j, tileSize * i);
                 TileModel square = new TileModel(pos, sizeVec);
-                square.setSize(squareSize);
+                square.setSize(tileSize);
                 squareRow.add(square);
             }
-            squares.add(squareRow);
+            tiles.add(squareRow);
         }
-        this.squares = squares;
+        this.tiles = tiles;
     }
 
-    public void calculateSquareSize(){
-        int rows = board.getRowsOnBoard();
-        squareSize = (int) (Resources.screenWidth / rows);
-    }
+
 
   //--------------------------------------------------------------------------
   // CHANGE LISTENER METHODS:
@@ -66,7 +60,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     public void onChange(BoardModel board) {
         for (int i = 0; i < board.getRowsOnBoard(); i++) {
             for (int j = 0; j < board.getColsOnBoard(); j++) {
-                TileModel square = squares.get(i).get(j);
+                TileModel square = tiles.get(i).get(j);
                 square.setTileState(board.getTileState(i, j));
             }
         }
@@ -77,7 +71,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         if (!doneInitializing) return;
         for (int i = 0; i < board.getRowsOnBoard(); i++) {
             for (int j = 0; j < board.getColsOnBoard(); j++) {
-                squares.get(i).get(j).update(dt);
+                tiles.get(i).get(j).update(dt);
             }
         }
     }
@@ -89,7 +83,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         if (!doneInitializing || canvas == null) return;
         for (int i = 0; i < board.getRowsOnBoard(); i++) {
             for (int j = 0; j < board.getColsOnBoard(); j++) {
-                squares.get(i).get(j).draw(canvas);
+                tiles.get(i).get(j).draw(canvas);
             }
         }
     }
@@ -103,8 +97,8 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
                 y = (int) touch.getY();
                 x = (int) touch.getX();
 
-                int col = x / squareSize;
-                int row = y / squareSize;
+                int col = x / tileSize;
+                int row = y / tileSize;
                 board.changeTileState(row, col);
                 isOnClick = true;
                 break;
@@ -112,7 +106,7 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
            // DOES NOT DETECT MOTION... ONLY TOUCH DOWN
             case MotionEvent.ACTION_MOVE:
                 if (isOnClick && (Math.abs(x - touch.getX()) > SCROLL_THRESHOLD || Math.abs(y - touch.getY()) > SCROLL_THRESHOLD)) {
-                    System.out.println("movement detected");
+                    //System.out.println("movement detected");
                     isOnClick = false;
                 }
                 break;
@@ -124,10 +118,10 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
     // return the final states of all the tiles on the grid
     public ArrayList<ArrayList<TileModel>> sendFinishedPattern(){
         ArrayList<ArrayList<TileModel>> pattern = new ArrayList<ArrayList<TileModel>>();
-        for (int i = 0; i < squares.size(); i++){
+        for (int i = 0; i < tiles.size(); i++){
             ArrayList<TileModel> row = new ArrayList();
-            for (int j = 0; j < squares.get(i).size(); j++){
-                TileModel state = squares.get(i).get(j);
+            for (int j = 0; j < tiles.get(i).size(); j++){
+                TileModel state = tiles.get(i).get(j);
                 row.add(state);
             }
             pattern.add(row);

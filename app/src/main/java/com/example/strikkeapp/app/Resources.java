@@ -7,6 +7,9 @@ package com.example.strikkeapp.app;
 import com.example.strikkeapp.app.models.BoardModel;
 
 import java.util.LinkedList;
+
+import sheep.math.Vector2;
+
 public class Resources {
 
     public static  String circumference = "0";
@@ -20,6 +23,8 @@ public class Resources {
     public static String recipeName ="Hello";
     public static int screenWidth;
     public static int screenHeight;
+    public static int tileSize;
+    public static boolean isPatternEmpty = true;
 
 
 }

@@ -3,13 +3,11 @@ package com.example.strikkeapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.models.BoardModel;
@@ -41,6 +39,7 @@ public class RecipeActivity extends Activity {
         Game patternModule = new Game(this, null); // External library.
 
         int screenWidth = Resources.screenWidth;
+        System.out.println("WITHIN THE RECIPE ACTIVITY");
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
@@ -51,11 +50,12 @@ public class RecipeActivity extends Activity {
         this.circumference = Integer.parseInt(Resources.circumference);
         this.stitches = Integer.parseInt(Resources.stitches);
 
-            RecipeModel recipe = new RecipeModel(bModel, circumference, stitches, screenWidth);
+            RecipeModel recipe = new RecipeModel(bModel, circumference, stitches);
             RecipeView view = new RecipeView(recipe, this);
             patternModule.pushState(view);
 
         createPatternLayout(patternModule, recipe);
+        System.out.println("THE PATTERN MODULE SHOULD BE CREATED.");
         createLayoutElements();
         setRecipeText();
     }
@@ -85,8 +85,9 @@ public class RecipeActivity extends Activity {
 
     private void createPatternLayout(Game patternModule, RecipeModel recipe) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-        float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * bModel.tileSize) / 2;
-        int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * bModel.tileSize;
+        System.out.println("TitleSize in RECIPE ACTIVITY: "+ Resources.tileSize);
+        float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * Resources.tileSize) / 2;
+        int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * Resources.tileSize;
         float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
 
         LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);

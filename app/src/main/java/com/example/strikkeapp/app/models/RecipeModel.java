@@ -19,10 +19,10 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     public int columns = Resources.cols*2;
 
     // CONSTRUCTOR
-    public RecipeModel(BoardModel bModel, int circumference, int stitches, int screenWidth) {
+    public RecipeModel(BoardModel bModel, int circumference, int stitches) {
         this.circumference = circumference;
         this.stitches = stitches;
-        this.screenWidth = screenWidth;
+        this.screenWidth = Resources.screenWidth;
         this.bModel = bModel;
 
         createTiles(bModel.cropPatternBasedOnTouchedTiles().size(), columns-calculateCropLength());

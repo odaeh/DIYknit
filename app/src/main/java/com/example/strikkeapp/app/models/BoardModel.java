@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.example.strikkeapp.app.Resources;
 import com.example.strikkeapp.app.activities.RecipeActivity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import sheep.math.Vector2;
@@ -13,7 +14,7 @@ import sheep.math.Vector2;
  */
 public class BoardModel extends SimpleObservable<BoardModel> implements Parcelable{
 
-    private GridModel grid;
+    private GridModel gridFullOfEmptyTiles;
     private ArrayList<ArrayList<TileModel>> allTiles;
     public ArrayList<ArrayList<TileModel>> tilesInPattern;
     public boolean isFinishedDrawing = false;
@@ -21,23 +22,20 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
     private int[] retrieveDrawnPatternDim = new int[4]; // Left, Right, Top, Bottom
     public int numOfTilesInBoardWidth;
     public int numOfTilesInBoardHeight;
-    int rowsOnBoard;
-    int colsOnBoard;
+    int rowsOnBoard = Resources.rows;
+    int colsOnBoard = Resources.cols;
     public static int [] patternAsIntArray;
-    public boolean noTouchedSquaresOnScreen;
+    public boolean isPatternEmpty;
 
     // CONSTRUCTOR
-    public BoardModel(int rowsOnBoard, int colsOnBoard){
-        noTouchedSquaresOnScreen = false;
-        this.rowsOnBoard = rowsOnBoard;
-        this.colsOnBoard = colsOnBoard;
-        initGrid(rowsOnBoard, colsOnBoard);
+    public BoardModel(){
+        this.tileSize = calculateTileSize();
+        gridFullOfEmptyTiles = new GridModel(Resources.rows, Resources.cols);
     }
 
-    // CONSTRUCTOR USED WHEN RECEIVING DATA
+    // CONSTRUCTOR USED WHEN RECEIVING DATA IN RECIPE ACTIVITY
     public BoardModel(Parcel source) {
         int sizeOfPattern = source.readInt();
-        tileSize = source.readInt();
         numOfTilesInBoardWidth = source.readInt();
 
         this.patternAsIntArray = new int[sizeOfPattern * sizeOfPattern];
@@ -55,9 +53,14 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         }
     }
 
-    // BUILDING PATTERN FROM LIST OF VALUES
+    public int calculateTileSize(){
+        tileSize = (int) (Resources.screenWidth / Resources.cols);
+        Resources.tileSize = tileSize;
+        return tileSize;
+    }
+
     public ArrayList<ArrayList<TileModel>> buildPatternFromIntArray(int size, int[] patternValues){
-        Vector2 sizeVec = new Vector2(tileSize, tileSize); // x and y direction => rectangular tiles
+        Vector2 sizeVec = new Vector2(tileSize, tileSize); // Vector2 is a method from the external library.
         allTiles = new ArrayList<ArrayList<TileModel>>();
         for (int i = 0; i < size; i++) {
             allTiles.add(new ArrayList<TileModel>());
@@ -120,12 +123,11 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         return allTiles.get(i).get(j).getPosition().getX();
     }
 
-
     public void getSizeOfPattern() {
         if (allTiles.size() == 0) {
-            noTouchedSquaresOnScreen = true;
+            isPatternEmpty = true;
         } else {
-            noTouchedSquaresOnScreen = false;
+            isPatternEmpty = false;
             ArrayList<Integer> tilesHoriziontalDirection = new ArrayList<Integer>();
             ArrayList<Integer> tilesVerticalDirection = new ArrayList<Integer>();
 
@@ -146,16 +148,15 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
             retrieveDrawnPatternDim[2] = tilesVerticalDirection.get(0); // Top
             retrieveDrawnPatternDim[3] = tilesVerticalDirection.get(tilesVerticalDirection.size() - 1); // Bottom
 
-            numOfTilesInBoardWidth = ((retrieveDrawnPatternDim[1] - retrieveDrawnPatternDim[0]) / tileSize + 1);
-            numOfTilesInBoardHeight = ((retrieveDrawnPatternDim[3] - retrieveDrawnPatternDim[2]) / tileSize + 1);
+            numOfTilesInBoardWidth = ((retrieveDrawnPatternDim[1] - retrieveDrawnPatternDim[0]) / Resources.tileSize + 1);
+            numOfTilesInBoardHeight = ((retrieveDrawnPatternDim[3] - retrieveDrawnPatternDim[2]) / Resources.tileSize + 1);
         }
     }
 
 
-    // USED WHEN SENDING DATA
+    // USED WHEN SENDING DATA FROM THE DRAW ACTIVITY
     public void writeToParcel(Parcel destination, int flags){
         destination.writeInt(allTiles.size());
-        destination.writeInt(tileSize);
         destination.writeInt(numOfTilesInBoardHeight);
         destination.writeIntArray(getPatternAsIntArray());
     }
@@ -180,10 +181,7 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         }
     };
 
-    // MAKES A GRID OF SIZE ROWS*COLS
-    public void initGrid(int rows, int columns){
-        grid = new GridModel(rows, columns);
-    }
+
 
     // GETERS AND SETERS
     //------------------------------------------------------------
@@ -196,11 +194,12 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
     }
 
     public TileState getTileState(int row, int col){
-        return grid.getTileState(row, col);
+        return gridFullOfEmptyTiles.getTileState(row, col);
     }
 
     public void setTileState(int row, int col, TileState state){
-        grid.setTileState(row, col, state);
+        gridFullOfEmptyTiles.setTileState(row, col, state);
+
     }
     //------------------------------------------------------------
 

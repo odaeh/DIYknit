@@ -40,7 +40,6 @@ public class MakeNewPatternActivity extends Activity {
                 boolean ready2;
 
                 if (field1.getText().toString().equals("")){
-                    //res.circumference = "0";
                     ready1 = false;
                 }
 
@@ -50,7 +49,6 @@ public class MakeNewPatternActivity extends Activity {
                 }
 
                 if (field2.getText().toString().equals("")){
-                    //res.stitches = "0";
                     ready2 = false;
                 }
                 else {

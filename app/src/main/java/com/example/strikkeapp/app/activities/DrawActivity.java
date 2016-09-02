@@ -50,7 +50,7 @@ public class DrawActivity extends Activity {
 
         Game patternModule = new Game(this, null); // From external library.
 
-        board = new BoardModel(rows, cols);
+        board = new BoardModel();
         final DrawBoardView drawBoardView = new DrawBoardView(board, this);
         patternModule.pushState(drawBoardView);
         setContentView(R.layout.draw_pattern_screen);
@@ -98,7 +98,7 @@ public class DrawActivity extends Activity {
 
     private void createLayoutElements(Game patternModule) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+board.tileSize));
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+Resources.tileSize));
         linearLayout.addView(patternModule);
 
         title = (TextView) findViewById(R.id.title);
@@ -109,7 +109,7 @@ public class DrawActivity extends Activity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (board.noTouchedSquaresOnScreen) { // no left square i.e no tiles have been touched adn pattern is empty
+                if (board.isPatternEmpty) { // no left square i.e no tiles have been touched adn pattern is empty
                     showMessage();
                     // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
                 } else {

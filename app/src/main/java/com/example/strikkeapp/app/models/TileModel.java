@@ -1,6 +1,8 @@
 package com.example.strikkeapp.app.models;
 
 import com.example.strikkeapp.app.R;
+import com.example.strikkeapp.app.Resources;
+
 import sheep.game.Sprite;
 import sheep.graphics.Image;
 import sheep.math.Vector2;
