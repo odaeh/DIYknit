@@ -25,14 +25,16 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         this.screenWidth = Resources.screenWidth;
         this.bModel = bModel;
 
-        createTiles(bModel.cropPatternBasedOnTouchedTiles().size(), columns-calculateCropLength());
-        generateBorder(bModel.cropPatternBasedOnTouchedTiles());
+        ArrayList<ArrayList<TileModel>> croppedTiles = bModel.cropPatternBasedOnTouchedTiles();
+        createTiles(croppedTiles.size(), columns-calculateCropLength());
+        generateBorder(croppedTiles);
 
         calculateCasts();
     }
 
     public int calculateCropLength(){
-        return columns - ((getNumOfMultiplePatternsInBord(bModel.cropPatternBasedOnTouchedTiles())*bModel.cropPatternBasedOnTouchedTiles().get(0).size()));
+        ArrayList<ArrayList<TileModel>> croppedPattern = bModel.cropPatternBasedOnTouchedTiles();
+        return columns - (getNumOfMultiplePatternsInBord(croppedPattern) * croppedPattern.get(0).size());
     }
 
     // Add tiles to the board
@@ -89,7 +91,7 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
     }
 
     public int calculateCasts(){
-        System.out.println("masker: " + numCasts);
+        //System.out.println("masker: " + numCasts);
         return  numCasts;
     }
 

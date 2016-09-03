@@ -39,7 +39,6 @@ public class RecipeActivity extends Activity {
         Game patternModule = new Game(this, null); // External library.
 
         int screenWidth = Resources.screenWidth;
-        System.out.println("WITHIN THE RECIPE ACTIVITY");
 
         // Receiving the board from the DrawActivity
         Intent intent = getIntent();
@@ -55,7 +54,6 @@ public class RecipeActivity extends Activity {
             patternModule.pushState(view);
 
         createPatternLayout(patternModule, recipe);
-        System.out.println("THE PATTERN MODULE SHOULD BE CREATED.");
         createLayoutElements();
         setRecipeText();
     }
@@ -85,7 +83,6 @@ public class RecipeActivity extends Activity {
 
     private void createPatternLayout(Game patternModule, RecipeModel recipe) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-        System.out.println("TitleSize in RECIPE ACTIVITY: "+ Resources.tileSize);
         float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * Resources.tileSize) / 2;
         int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * Resources.tileSize;
         float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
@@ -106,8 +103,8 @@ public class RecipeActivity extends Activity {
         else {
             numCasts = numPatterns * bModel.numOfTilesInBoardWidth;
         }
-        System.out.println("Antall masker i omkretsen: " + numPatterns);
-        System.out.println("Antall masker: " + numCasts);
+        //System.out.println("Antall masker i omkretsen: " + numPatterns);
+        //System.out.println("Antall masker: " + numCasts);
        recipeText.setText("Legg opp " + numCasts + " masker, da vil mønsteret ditt opptre " + numPatterns + " ganger.\n"
                + "Følg så mønster over til du er ferdig med borden. Fortsett så på original oppskrift for genser, lue eller skjerf. " );
     }

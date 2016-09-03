@@ -29,12 +29,13 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
 
     // CONSTRUCTOR
     public BoardModel(){
-        this.tileSize = calculateTileSize();
+        this.tileSize = getTileSize();
         gridFullOfEmptyTiles = new GridModel(Resources.rows, Resources.cols);
     }
 
     // CONSTRUCTOR USED WHEN RECEIVING DATA IN RECIPE ACTIVITY
     public BoardModel(Parcel source) {
+        this.tileSize = getTileSize();
         int sizeOfPattern = source.readInt();
         numOfTilesInBoardWidth = source.readInt();
 
@@ -53,10 +54,10 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         }
     }
 
-    public int calculateTileSize(){
-        tileSize = (int) (Resources.screenWidth / Resources.cols);
-        Resources.tileSize = tileSize;
-        return tileSize;
+    public int getTileSize(){
+        int tSize = (int) (Resources.screenWidth / Resources.cols);
+        Resources.tileSize = tSize;
+        return tSize;
     }
 
     public ArrayList<ArrayList<TileModel>> buildPatternFromIntArray(int size, int[] patternValues){
