@@ -28,11 +28,18 @@
         android:background="@drawable/background">
 
     </LinearLayout>
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="2.0dip"
+    android:paddingBottom="2.0dip">
     <Button
-        android:layout_width="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_width="150sp"
+        android:layout_marginTop="4.0dip"
         android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:paddingBottom="4.0dip"
         android:text="Draw again."
         android:background="@drawable/button"
         android:layout_gravity="center_horizontal"
@@ -42,6 +49,7 @@
         android:id="@+id/recipeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="4.0"
         android:textSize="20sp"
         android:textStyle="italic"
         android:textColor="#4B7948"
@@ -50,12 +58,15 @@
     </TextView>
 
     <Button
-            android:layout_width="150dp"
-            android:layout_marginTop="50dp"
+            android:layout_width="150sp"
+            android:layout_marginTop="4.0dip"
+            android:layout_marginBottom="4.0dip"
             android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:text="Back to Main Menu"
             android:background="@drawable/button"
             android:layout_gravity="center_horizontal"
             android:id="@+id/backToMainMenuButton"/>
+</LinearLayout>
 
 </LinearLayout>
