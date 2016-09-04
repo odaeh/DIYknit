@@ -59,6 +59,10 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         Resources.tileSize = tSize;
         return tSize;
     }
+    // BOARD MODEL CLASS IS PARCELABLE
+    public int describeContents() {
+        return ((Parcelable)this).hashCode();
+    }
 
     public ArrayList<ArrayList<TileModel>> buildPatternFromIntArray(int size, int[] patternValues){
         Vector2 sizeVec = new Vector2(tileSize, tileSize); // Vector2 is a method from the external library.
@@ -81,13 +85,6 @@ public class BoardModel extends SimpleObservable<BoardModel> implements Parcelab
         }
         return allTiles;
     }
-
-    // BOARD MODEL CLASS IS PARCELABLE
-    public int describeContents() {
-        return ((Parcelable)this).hashCode();
-    }
-
-    // CHANGE THE TILE STATE AND NOTIFY THE DRAW MODEL
     public void changeTileState(int row, int col){
         if (getTileState(row, col) == TileState.EMPTY) {
             setTileState(row, col, TileState.FULL);

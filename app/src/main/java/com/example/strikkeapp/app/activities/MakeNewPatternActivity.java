@@ -7,9 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 
@@ -18,9 +16,11 @@ import com.example.strikkeapp.app.Resources;
  */
 public class MakeNewPatternActivity extends Activity {
 
-    private EditText field1;
-    private EditText field2;
-    private Button button;
+    private EditText circumferenceField;
+    private EditText stitchesField;
+    private Button okButton;
+    private boolean isCircumferrenceAdded;
+    private boolean isStichesAdded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,46 +28,46 @@ public class MakeNewPatternActivity extends Activity {
 
         setContentView(R.layout.new_pattern);
 
-        field1 = (EditText) findViewById(R.id.circumference);
-        field2 = (EditText) findViewById(R.id.stitch);
-        button = (Button) findViewById(R.id.next);
+        circumferenceField = (EditText) findViewById(R.id.circumference);
+        stitchesField = (EditText) findViewById(R.id.stitch);
+        okButton = (Button) findViewById(R.id.next);
 
-        button.setOnClickListener(new OnClickListener() {
+        okButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Resources res = new Resources();
-                boolean ready1;
-                boolean ready2;
+                validateInputFields();
 
-                if (field1.getText().toString().equals("")){
-                    ready1 = false;
-                }
-
-                else {
-                    res.circumference = field1.getText().toString();
-                    ready1 = true;
-                }
-
-                if (field2.getText().toString().equals("")){
-                    ready2 = false;
-                }
-                else {
-                    res.stitches = field2.getText().toString();
-                    ready2 = true;
-                }
-
-                if (ready1 && ready2) {
-                    // TODO: stitches cannot be larger than circumferrence! Show a message if this happens.
+                if (isCircumferrenceAdded && isStichesAdded) {
                     Intent intent = new Intent(MakeNewPatternActivity.this, DrawActivity.class);
                     startActivity(intent);
                 }
                 else{
-                    giveMessage();
+                    showErrorMessage();
                 }
             }
         });
     }
-    public void giveMessage(){
+
+    private void validateInputFields() {
+        if (circumferenceField.getText().toString().equals("")){
+            isCircumferrenceAdded = false;
+        }
+
+        else {
+            Resources.circumference = Integer.parseInt(circumferenceField.getText().toString());
+            isCircumferrenceAdded = true;
+        }
+
+        if (stitchesField.getText().toString().equals("")){
+            isStichesAdded = false;
+        }
+        else {
+            Resources.stitches = Integer.parseInt(stitchesField.getText().toString());
+            isStichesAdded = true;
+        }
+    }
+
+    public void showErrorMessage(){
         Toast.makeText(this, "Vennligst skriv inn både omkrets og strikkefasthet på garn!", Toast.LENGTH_LONG).show();
     }
 }

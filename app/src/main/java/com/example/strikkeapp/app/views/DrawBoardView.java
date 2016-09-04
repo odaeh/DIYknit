@@ -52,10 +52,8 @@ public class DrawBoardView extends State implements OnChangeListener<BoardModel>
         this.tiles = tiles;
     }
 
-
-
   //--------------------------------------------------------------------------
-  // CHANGE LISTENER METHODS:
+  // CHANGE LISTENERS:
   //--------------------------------------------------------------------------
     public void onChange(BoardModel board) {
         for (int i = 0; i < board.getRowsOnBoard(); i++) {

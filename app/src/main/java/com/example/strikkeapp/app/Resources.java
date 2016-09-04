@@ -12,8 +12,8 @@ import sheep.math.Vector2;
 
 public class Resources {
 
-    public static  String circumference = "0";
-    public static  String stitches = "0";
+    public static  int circumference;
+    public static  int stitches;
     public static  LinkedList<String> fifoSavedRecipes = new LinkedList<String>();
     public static  Boolean existingButtonPushed = false;
     public static  Boolean fixNewlyMadePattern = false;
@@ -24,7 +24,4 @@ public class Resources {
     public static int screenWidth;
     public static int screenHeight;
     public static int tileSize;
-    public static boolean isPatternEmpty = true;
-
-
 }

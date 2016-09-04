@@ -32,21 +32,17 @@ public class DrawActivity extends Activity {
     private BoardModel board;
     private Button saveButton;
     private Button helpButton;
-    private TextView title;
     private String patternID = "";
     final Context context = this;
     public int[] patternAsList;
-    int rows = Resources.rows;
-    int cols = Resources.cols;
-    public CustomAdapter adapter;
     int screenWidth;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getDisplayMetrics();
+        //getDisplayMetrics();
+        screenWidth = Resources.screenWidth;
 
         Game patternModule = new Game(this, null); // From external library.
 
@@ -63,13 +59,7 @@ public class DrawActivity extends Activity {
         createSaveButton(drawBoardView);
     }
 
-    private void getDisplayMetrics() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenWidth = displayMetrics.widthPixels;
-        Resources.screenWidth = screenWidth;
-        Resources.screenHeight = displayMetrics.heightPixels;
-    }
+
 
     private void createUserHelpDialog(AlertDialog.Builder instructionsHelp) {
         instructionsHelp.setTitle("Slik lager du ditt eget mønster:");
@@ -100,8 +90,6 @@ public class DrawActivity extends Activity {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.drawPatternModule);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenWidth+Resources.tileSize));
         linearLayout.addView(patternModule);
-
-        title = (TextView) findViewById(R.id.title);
     }
 
     public void createSaveButton(final DrawBoardView drawBoardView){
@@ -111,7 +99,6 @@ public class DrawActivity extends Activity {
             public void onClick(View v) {
                 if (board.isPatternEmpty) { // no left square i.e no tiles have been touched adn pattern is empty
                     showMessage();
-                    // TODO: Not allowed to save board if none of the tiles are touched i.e there is no pattern
                 } else {
                     AlertDialog.Builder nameSavedPattern = new AlertDialog.Builder(context);
                     createGiveNameDialog(nameSavedPattern, drawBoardView);
@@ -173,12 +160,9 @@ public class DrawActivity extends Activity {
             Toast.makeText(this, "Exception HER: "+t.toString(), Toast.LENGTH_LONG).show();
             System.out.println("ERROR: " + t);
         }
-
     }
 
     public void write (int[] pattern) throws IOException{
-        // TODO: save patterns as an int array when the "save" button has been pushed.
-        // TODO: store patterns in another list that can be retrieved from the activity "Existing patterns"
         String savedPattern = makeString(board.getPatternAsIntArray());
         FileOutputStream fOut = openFileOutput("test",MODE_WORLD_READABLE);
         fOut.write(savedPattern.getBytes());
@@ -204,29 +188,4 @@ public class DrawActivity extends Activity {
         }
         return str;
     }
-
-    /*
-    private void addStoredPattern(String storedPattern){
-        if (Resources.storedPatternsAsStrings[0].equals("")){
-            Resources.storedPatternsAsStrings[0] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[0]);
-        }
-        else if (Resources.storedPatternsAsStrings[1].equals("")){
-            Resources.storedPatternsAsStrings[1] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[1]);
-
-        }
-        else if (Resources.storedPatternsAsStrings[2].equals("")){
-            Resources.storedPatternsAsStrings[2] = storedPattern;
-            System.out.println("HER ER FILEN!!!!!!!");
-            System.out.print(Resources.storedPatternsAsStrings[2]);
-
-        }
-        else{ // the first pattern is deleted and replaced
-            Resources.storedPatternsAsStrings[0] = storedPattern;
-        }
-    }
-    */
 }

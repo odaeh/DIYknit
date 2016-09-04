@@ -3,13 +3,10 @@ package com.example.strikkeapp.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-
 import com.example.strikkeapp.app.R;
 import com.example.strikkeapp.app.Resources;
 
@@ -23,15 +20,24 @@ public class MainMenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
+        getDisplayMetrics();
+        int width = Resources.screenWidth;
 
         setContentView(R.layout.main_menu);
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.layout);
         linearLayout.setLayoutParams(new LinearLayout.LayoutParams(width, width));
 
+        setLayoutElements();
+    }
+    private void getDisplayMetrics() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        Resources.screenWidth = displayMetrics.widthPixels;
+        Resources.screenHeight = displayMetrics.heightPixels;
+    }
 
+    private void setLayoutElements() {
         newPatternButton = (Button) findViewById(R.id.newPattern);
         newPatternButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +54,7 @@ public class MainMenuActivity extends Activity {
                 Resources.existingButtonPushed = true;
                 Intent intent = new Intent(MainMenuActivity.this, ExistingPatternActivity.class);
                 startActivity(intent);
+                // TODO: Link to saved patterns from previous sessions.
             }
         });
 
@@ -55,9 +62,11 @@ public class MainMenuActivity extends Activity {
         userGuideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Linke til en akrivitet med bilder og text over hvordan appen virker
+                // TODO: Link to an activity with a view that shows how the app works (including screenshots).
             }
         });
     }
+
+
 
 }

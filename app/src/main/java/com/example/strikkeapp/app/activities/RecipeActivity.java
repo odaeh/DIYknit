@@ -38,24 +38,34 @@ public class RecipeActivity extends Activity {
 
         Game patternModule = new Game(this, null); // External library.
 
-        int screenWidth = Resources.screenWidth;
-
-        // Receiving the board from the DrawActivity
+        // Receiving the board from the DrawActivity:
         Intent intent = getIntent();
         this.bModel = intent.getParcelableExtra("boardModel");
         this.storedPattern = intent.getStringExtra("storedPattern");
 
-        // Receiving data from Resources
-        this.circumference = Integer.parseInt(Resources.circumference);
-        this.stitches = Integer.parseInt(Resources.stitches);
+        // Retrieving data from Resources:
+        this.circumference = Resources.circumference;
+        this.stitches = Resources.stitches;
 
-            RecipeModel recipe = new RecipeModel(bModel, circumference, stitches);
-            RecipeView view = new RecipeView(recipe, this);
-            patternModule.pushState(view);
+        RecipeModel recipe = new RecipeModel(bModel);
+        RecipeView view = new RecipeView(recipe, this);
+        patternModule.pushState(view);
 
         createPatternLayout(patternModule, recipe);
         createLayoutElements();
         setRecipeText();
+    }
+
+    private void createPatternLayout(Game patternModule, RecipeModel recipe) {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
+        float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * Resources.tileSize) / 2;
+        int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * Resources.tileSize;
+        float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
+
+        LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
+        patternModuleView.gravity = Gravity.CENTER;
+        linearLayout.setLayoutParams(patternModuleView);
+        linearLayout.addView(patternModule);
     }
 
     private void createLayoutElements() {
@@ -79,18 +89,6 @@ public class RecipeActivity extends Activity {
                 startActivity(intent);
             }
         });
-    }
-
-    private void createPatternLayout(Game patternModule, RecipeModel recipe) {
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.recipeView);
-        float heightOfPatternModule = (bModel.numOfTilesInBoardHeight * Resources.tileSize) / 2;
-        int widthOfOnePatternSequence = bModel.numOfTilesInBoardWidth * Resources.tileSize;
-        float widthOfPatternModule = ((recipe.columns / bModel.numOfTilesInBoardWidth) * widthOfOnePatternSequence) / 2;
-
-        LinearLayout.LayoutParams patternModuleView = new LinearLayout.LayoutParams((int) widthOfPatternModule, (int) heightOfPatternModule);
-        patternModuleView.gravity = Gravity.CENTER;
-        linearLayout.setLayoutParams(patternModuleView);
-        linearLayout.addView(patternModule);
     }
 
     private void setRecipeText(){

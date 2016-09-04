@@ -1,7 +1,6 @@
 package com.example.strikkeapp.app.models;
 
 import com.example.strikkeapp.app.Resources;
-
 import java.util.ArrayList;
 import sheep.math.Vector2;
 
@@ -11,34 +10,25 @@ import sheep.math.Vector2;
 public class RecipeModel extends SimpleObservable <RecipeModel> {
 
     public ArrayList<ArrayList<TileModel>> tiles = new ArrayList<ArrayList<TileModel>>();
-    int screenWidth;
     int circumference;
     int stitches;
     int numCasts;
     public BoardModel bModel;
-    public int columns = Resources.cols*2;
+    public int columns;
 
     // CONSTRUCTOR
-    public RecipeModel(BoardModel bModel, int circumference, int stitches) {
-        this.circumference = circumference;
-        this.stitches = stitches;
-        this.screenWidth = Resources.screenWidth;
+    public RecipeModel(BoardModel bModel) {
+        this.circumference = Resources.circumference;
+        this.stitches = Resources.stitches;
         this.bModel = bModel;
+        this.columns = Resources.cols*2;
 
-        ArrayList<ArrayList<TileModel>> croppedTiles = bModel.cropPatternBasedOnTouchedTiles();
-        createTiles(croppedTiles.size(), columns-calculateCropLength());
-        generateBorder(croppedTiles);
-
-        calculateCasts();
-    }
-
-    public int calculateCropLength(){
         ArrayList<ArrayList<TileModel>> croppedPattern = bModel.cropPatternBasedOnTouchedTiles();
-        return columns - (getNumOfMultiplePatternsInBord(croppedPattern) * croppedPattern.get(0).size());
+        createFinishedPattern(croppedPattern.size(), columns-calculateCropLength());
+        generateBorder(croppedPattern);
     }
 
-    // Add tiles to the board
-    public ArrayList<ArrayList<TileModel>> createTiles(int rows, int columns){
+    public ArrayList<ArrayList<TileModel>> createFinishedPattern(int rows, int columns){
         Vector2 sizeVec = new Vector2(bModel.tileSize /2, bModel.tileSize /2);
         for (int i = 0; i < rows; i++) {
             tiles.add(new ArrayList<TileModel>());
@@ -52,17 +42,24 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         return tiles;
     }
 
-    // Add multiple patterns after each other to create a border
+    public int calculateCropLength(){
+        ArrayList<ArrayList<TileModel>> croppedPattern = bModel.cropPatternBasedOnTouchedTiles();
+        return columns - (getNumOfMultiplePatternsInBord(croppedPattern) * croppedPattern.get(0).size());
+    }
+
     public void generateBorder(ArrayList<ArrayList<TileModel>> pattern){
         int num = getNumOfMultiplePatternsInBord(pattern);
-       // System.out.println("Pattern Rows: " + pattern.size() + "Column: " + pattern.get(0).size() + ", Num: "+num);
         for (int col = 0; col < num ; col++){
-            printArray(pattern);
+            //printArray(pattern);
             insertPattern(0, col* pattern.get(0).size(), pattern);
         }
     }
 
-    // Add pattern to the tiles
+    public int getNumOfMultiplePatternsInBord(ArrayList<ArrayList<TileModel>> pattern){
+        int tileSize = pattern.get(0).size();
+        return (columns/tileSize);
+    }
+
     public void insertPattern(int i, int j, ArrayList<ArrayList<TileModel>> pattern){
         //printArray(tiles);
         for (int row = 0; row < pattern.size(); row++){
@@ -78,22 +75,7 @@ public class RecipeModel extends SimpleObservable <RecipeModel> {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).size(); j++) {
                 char state = list.get(i).get(j).getTileState() == TileState.EMPTY ? '.' : '*';
-                //System.out.print(state);
             }
-            //System.out.println(" ");
         }
-        //System.out.println(" --- ");
     }
-
-    public int getNumOfMultiplePatternsInBord(ArrayList<ArrayList<TileModel>> pattern){
-        int tileSize = pattern.get(0).size();
-        return (columns/tileSize);
-    }
-
-    public int calculateCasts(){
-        //System.out.println("masker: " + numCasts);
-        return  numCasts;
-    }
-
-
 }

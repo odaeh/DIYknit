@@ -71,9 +71,5 @@ public class TileModel extends Sprite{
     public TileState getTileState(){
         return this.state;
     }
-
-    public int getTileSize(){
-        return (int)size.getX();
-    }
 }
 
