@@ -2,25 +2,25 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\ohoem\Documents\DIYknit\app\libs\sheep.jar"
+        jar="C:\Users\ohoem\workspace\StrikkeApp\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        revision="21.0.0"
+        sha1="5a60dd767241e89845f7218d2d1199176512d378">
+        <dex dex="C:\Users\ohoem\workspace\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_38f9ca6b59ce345572e7dba309131df093f77bc1\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\ohoem\workspace\StrikkeApp\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="21.0.0"
+        sha1="c60b9a5e195cedde2ca92e35c1679ecde28201e7">
+        <dex dex="C:\Users\ohoem\workspace\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_e54b71fedeb5e3f4fcb6db4b13a3df7b748bc0b5\classes.dex" />
+    </item>
+    <item
+        jar="C:\Users\ohoem\workspace\StrikkeApp\app\libs\sheep.jar"
         jumboMode="true"
         revision="21.0.0"
         sha1="6f2a3065cccc5b4acc1b118be7d80231485a1f90">
-        <dex dex="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\transforms\dex\debug\folders\1000\2\sheep_a6bd71577cfb318d269ffb9acb99ae134636f3b9\classes.dex" />
-    </item>
-    <item
-        jar="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="21.0.0"
-        sha1="423a4c5521eb182c4cbe50ad57e626b37db01040">
-        <dex dex="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_ca351304b80e57311dcd355eb72e800d4882aca5\classes.dex" />
-    </item>
-    <item
-        jar="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
-        jumboMode="true"
-        revision="21.0.0"
-        sha1="2271fcec7dd9a889e55f2606eca0662c616d14b3">
-        <dex dex="C:\Users\ohoem\Documents\DIYknit\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_445bd0579972b20fb962d78dd901e6a9f79f5138\classes.dex" />
+        <dex dex="C:\Users\ohoem\workspace\StrikkeApp\app\build\intermediates\transforms\dex\debug\folders\1000\2\sheep_ca8025ab1d0e7aa7cdd7dadadf20ac654cbce16c\classes.dex" />
     </item>
 
 </items>
